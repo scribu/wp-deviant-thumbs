@@ -1,7 +1,7 @@
 <?php
 /*
 Plugin Name: Deviant Thumbs
-Version: 1.2.4
+Version: 1.2.5
 Description: Display clickable deviation thumbs from your DeviantArt account.
 Author: scribu
 Author URI: http://scribu.net/
@@ -25,7 +25,7 @@ Plugin URI: http://scribu.net/download/deviant-thumbs/
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-function deviant_thumbs($query, $count=3, $rand=0, $cache=3){
+function deviant_thumbs($query, $count=3, $rand=0, $cache=6, $before='<li>', $after='</li>'){
 	$query = implode('%20', explode(' ', $query));
 	$localfile = dirname(__FILE__).'/deviant-thumbs-cache.txt';
 	$cache *= 3600;
@@ -76,11 +76,9 @@ function deviant_thumbs($query, $count=3, $rand=0, $cache=3){
 
 	if($rand) shuffle($thumbs);
 	
-	echo '<ul class="deviant-thumbs">';
 	for($i=0; $i<$count && $i<count($thumbs); $i++){
-		echo "<li>".$thumbs[$i].$after."</li>\n";
+		echo $before.$thumbs[$i].$after."\n";
 	}
-	echo '</ul>';
 }
 
 //Begin widget support
@@ -95,7 +93,8 @@ function deviant_thumbs_widget_init(){
     'query' => 'by:',
     'count' => 3,
 	'rand' => 0,
-	'cache' => 3);
+	'cache' => 6
+  );
 
   add_option('deviant thumbs', $options);
 
@@ -109,7 +108,9 @@ function deviant_thumbs_widget($args){
   
   echo $before_widget;
   echo $before_title . $title . $after_title;
+  echo '<ul class="deviant-thumbs">';
     deviant_thumbs($query, $count, $rand, $cache);
+  echo '</ul>';
   echo $after_widget;
 }
 
@@ -131,26 +132,27 @@ function deviant_thumbs_widget_control(){
 	extract($options);
 ?>
 
-	<label for="deviant_thumbs-title" style="text-align:left; line-height: 35px; display: block;">Title:
-		<input id="deviant_thumbs-title" name="deviant_thumbs-title" type="text" value="<?php echo $title; ?>" style="width: 200px;" />
-	</label>
+	<p><label for="deviant_thumbs-title">Title:</label>
+		<input id="deviant_thumbs-title" name="deviant_thumbs-title" type="text" value="<?php echo $title; ?>" style="width: 180px;" />
+	</p>
 
-	<label for="deviant_thumbs-query" style="text-align:left; line-height: 35px; display: block;">Query (Ex: 'by:Username')
+	<p><label for="deviant_thumbs-query">Query:</label>
 		<input id="deviant_thumbs-query" name="deviant_thumbs-query" type="text" value="<?php echo $query; ?>" style="width: 100%" />
-	</label>
+		<br />Example: 'by:Username in:Photography'
+	</p>
 
-	<label for="deviant_thumbs-count" style="text-align:left; line-height: 35px; display: block;">Number of thumbs:
-		<input id="deviant_thumbs-count" name="deviant_thumbs-count" type="text" value="<?php echo $count; ?>" style="width: 25px;" />
-	</label>
+	<p><label for="deviant_thumbs-count">Number of thumbs:</label>
+		<input id="deviant_thumbs-count" name="deviant_thumbs-count" type="text" value="<?php echo $count; ?>" style="width: 20px;" />
+	</p>
 
-	<label for="deviant_thumbs-rand" style="text-align:left; line-height: 35px; display: block;">Randomise thumbs:
-		<input id="deviant_thumbs-rand" name="deviant_thumbs-rand" checked="unchecked" value="1" type="checkbox">
-	</label>
+	<p><label for="deviant_thumbs-rand">Show thumbs in a random order:</label>
+		<input id="deviant_thumbs-rand" name="deviant_thumbs-rand" type="checkbox" <?php if($rand) echo 'checked="checked"'; ?> value="1">
+	</p>
+
+	<p><label for="deviant_thumbs-cache">Update cache every</label>
+		<input id="deviant_thumbs-cache" name="deviant_thumbs-cache" type="text" value="<?php echo $cache; ?>" style="width: 20px;" /> hours.
+	</p>
 	
-	<label for="deviant_thumbs-cache" style="text-align:left; line-height: 35px; display: block;">Update cache every
-		<input id="deviant_thumbs-cache" name="deviant_thumbs-cache" type="text" value="<?php echo $cache; ?>" style="width: 25px;" /> hours.
-	</label>
-
-  <input type="hidden" id="deviant_thumbs-submit" name="deviant_thumbs-submit" value="1" />
+	<input type="hidden" id="deviant_thumbs-submit" name="deviant_thumbs-submit" value="1" />
 
 <?php } ?>
