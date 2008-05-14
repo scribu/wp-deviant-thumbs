@@ -1,71 +1,80 @@
 <?php
 /*
 Plugin Name: Deviant Thumbs
-Version: 1.2.5
+Version: 1.2.6
 Description: Display clickable deviation thumbs from your DeviantArt account.
 Author: scribu
 Author URI: http://scribu.net/
 Plugin URI: http://scribu.net/download/deviant-thumbs/
 */
 
-/*  Copyright 2008  scribu  (email : scribu@gmail.com)
+/*
+Copyright (C) 2008 scribu.net (scribu AT gmail DOT com)
 
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 3 of the License, or
+(at your option) any later version.
 
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
-    along with this program; if not, write to the Free Software
-    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 function deviant_thumbs($query, $count=3, $rand=0, $cache=6, $before='<li>', $after='</li>'){
-	$query = implode('%20', explode(' ', $query));
-	$localfile = dirname(__FILE__).'/deviant-thumbs-cache.txt';
+	$query = urlencode($query);
+	$dir = dirname(__FILE__);
+	$localfile = $dir . '/deviant-thumbs-cache.txt';
 	$cache *= 3600;
 
 	$rebuild = TRUE;
-	if($cache && (is_writable($localfile) || is_writable(dirname(__FILE__)))){
-		$cacheon = TRUE;
-		
-		if(file_exists($localfile)){
-			//Load file
-			$fh = fopen($localfile, 'r');
-			$aux = explode(' ',fgets($fh));
-			fclose($fh);
+	if( file_exists($localfile) ){
+		# Load parameters
+		$fh = fopen($localfile, 'r');
+		$aux = explode(' ',fgets($fh));
+		fclose($fh);
 
-			if($aux[0] == $query && $aux[1] >= $count && time()-filemtime($localfile) <= $cache){
-				//Extract thumbs from cache
-				$tmp = explode("\n\n",@file_get_contents($localfile));
-				$thumbs = explode("\n",$tmp[1]);
-				$rebuild = FALSE;
-			}
+		if($aux[0] == $query && $aux[1] >= $count && time()-filemtime($localfile) <= $cache){
+			# Extract thumbs from cache
+			$tmp = explode("\n\n", @file_get_contents($localfile));
+			$thumbs = explode("\n", $tmp[1]);
+			$rebuild = FALSE;
 		}
 	}
-	else $cacheon = FALSE;
 
 	if($rebuild){
 		$remotefile = "http://search.deviantart.com/?section=browse&qh=sort:time&q=" . $query;
 		$open = "<span class=\"shadow\">";
 		$close = "</span><!-- ^TTT -->";
-		//Process remote file
+
+		# Extract thumbs from remote file
 		$source = @file_get_contents($remotefile);
 		$items = explode($open,$source);
 		array_shift($items);
 		array_pop($items);
-
-		for($i=0; $i<count($items); $i++){
-			$aux = explode($close,$items[$i]);
-			$thumbs[$i] = $aux[0];
+		foreach($items as $item){
+			$aux = explode($close,$item);
+			$thumbs[] = $aux[0];
 		}
-		//Write to cache
+		
+		if(!$thumbs){
+			echo 'Error: No thumbs found.';
+			return 0;
+		}
+
+		#Check if caching is possible
+		chmod($cache_dir, 0757);
+		if($cache && (is_writable($dir) || is_writable($localfile)))
+			$cacheon = TRUE;
+		else
+			$cacheon = FALSE;
+
 		if($cacheon){
+			#Write to cache
 			$fp = fopen($localfile, "w");
 			$opt = implode(' ', compact("query", "count", "rand"));
 			$tmp = $opt . "\n\n" . implode("\n",$thumbs);
@@ -75,10 +84,12 @@ function deviant_thumbs($query, $count=3, $rand=0, $cache=6, $before='<li>', $af
 	}
 
 	if($rand) shuffle($thumbs);
-	
+
 	for($i=0; $i<$count && $i<count($thumbs); $i++){
 		echo $before.$thumbs[$i].$after."\n";
 	}
+
+	return 1;
 }
 
 //Begin widget support
