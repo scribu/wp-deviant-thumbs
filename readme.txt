@@ -2,7 +2,7 @@
 Contributors: scribu
 Donate link: http://scribu.net/download/
 Tags: deviantart, thumbs, images
-Requires at least: 1.5
+Requires at least: 2.0
 Tested up to: 2.5.1
 Stable tag: trunk
 
