@@ -12,8 +12,14 @@ Display DeviantArt thumbs on your blog.
 
 Display a selection of linked thumbnails from DeviantArt on your WordPress blog.
 
+Since version 1.3, the thumbs are enclosed in a **scrollable carousel**, using [jCarousel](http://sorgalla.com/projects/jcarousel/), by Jan Sorgalla.
+
 Can be used with or without widgets.
 
+Future development:
+
+* shortcode tag
+* multiple cache files
 
 == Installation ==
 
@@ -23,16 +29,32 @@ Can be used with or without widgets.
 
 == Usage ==
 
-**General Usage (With Widget)**
+= General Usage (With Widget) =
 
 1. Go to **WP-Admin -> Presentation -> Widgets**.
 1. **Drag** the Deviant Thumbs Widget to your sidebar.
 1. **Configure** the Deviant Thumbs Widget.
 1. Click 'Save Changes'.
 
-**Function Call (Outside WP loop)**
+= Function Call (Outside WP loop) =
 
-Use:
+**Carousel**
+
+`<?php if (function_exists('deviant_thumbs_carousel')): ?>
+  <ul class="deviant-thumbs">
+    <?php deviant_thumbs_carousel($query, $count = 3, $rand = FALSE, $vertical = FALSE, $cache = 6); ?>
+  </ul>
+<?php endif; ?>`
+
+*Parameters*
+
+* *$query* is a search string used on [DeviantArt](http://browse.deviantart.com/). ( Example: 'by:scribu in:photography' )
+* *$count* is the number of thumbs to display. The maximum is 24.
+* *$rand* is a flag to randomise thumbs or not. Can be `TRUE` or `FALSE`.
+* *$vertical* is a flag to display a vertical or horizontal carousel. Can be `TRUE` or `FALSE`.
+* *$cache* is the number of hours after which the cache has to be rebuilt. This creates a text file in the directory of the plugin, which must be writable.
+
+**Simple (without carousel)**
 
 `<?php if (function_exists('deviant_thumbs')): ?>
   <ul class="deviant-thumbs">
@@ -40,10 +62,10 @@ Use:
   </ul>
 <?php endif; ?>`
 
-**Parameters**
+*Parameters*
 
 * *$query* is a search string used on [DeviantArt](http://browse.deviantart.com/). ( Example: 'by:scribu in:photography' )
-* *$count* is the number of thumbs to display.
+* *$count* is the number of thumbs to display. The maximum is 24.
 * *$rand* is a flag to randomise thumbs or not. Can be `TRUE` or `FALSE`.
 * *$cache* is the number of hours after which the cache has to be rebuilt. This creates a text file in the directory of the plugin, which must be writable.
 * *$before* is a string inserted before each thumb. It can be a HTML tag or just plain text.
@@ -56,9 +78,11 @@ Use:
 
 Please see the information about [using the main search](http://help.deviantart.com/577/) on DeviantArt.
 
-= How many thumbs can it display? =
+= Can I modifify the carousel skin? =
 
-Any number from 1 to 24.
+Yes, you can edit the files in `deviant-thumbs/jcarousel/skins/deviantart/`.
+
+Or, you can make a new one and place it in the skins directory. After that, you have to modify $deviant_thumbs_carousel_skin in the main plugin file, `deviant-thumbs.php`.
 
 = Why isn't the cache working? =
 
