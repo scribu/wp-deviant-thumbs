@@ -1,7 +1,7 @@
 <?php
 /*
 Plugin Name: Deviant Thumbs
-Version: 1.3
+Version: 1.3.1
 Description: Display clickable deviation thumbs from your DeviantArt account.
 Author: scribu
 Author URI: http://scribu.net/
@@ -26,7 +26,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
 /******** Carousel Options  ************/
-$deviant_thumbs_carousel_disable = FALSE;	// Set to TRUE if you don't want to use carousels at all.
+$deviant_thumbs_carousel_enabled = TRUE;	// Set to FALSE if you don't want to use carousels at all.
 $deviant_thumbs_carousel_skin = 'deviantart';
 /************************************/
 
@@ -101,34 +101,42 @@ class deviantThumbs{
 
 class deviantThumbsCarousel extends deviantThumbs{
 	var $skin;
+	var $plugin_path;
 
 	function __construct(){
 		$this->carousel_init();
 	}
 
 	function carousel_init(){
-		global $deviant_thumbs_carousel_disable, $deviant_thumbs_carousel_skin;
+		global $deviant_thumbs_carousel_enabled, $deviant_thumbs_carousel_skin;
 
-		if($deviant_thumbs_carousel_disable)
+		if(!$deviant_thumbs_carousel_enabled)
 			return FALSE;
-
+		
+		#Set skin
 		$this->skin = $deviant_thumbs_carousel_skin;
-
+		
+		#Add js and css to head
 		add_action('init', array(&$this, 'carousel_js'));
 		add_action('wp_head', array(&$this, 'carousel_css'));
 		
+		#Set plugin path
+		$siteurl = get_option("siteurl");
+		$siteurl = rtrim($siteurl, '/') . '/';
+		$this->plugin_path = $siteurl . "wp-content/plugins/" . dirname(plugin_basename(__FILE__));
+
 		return TRUE;
 	}
 
 	function carousel_js(){
-		$js_path = $this->plugin_path() . '/jcarousel';
+		$js_path = $this->plugin_path . '/jcarousel';
 
 		wp_enqueue_script( 'jcarousel', $js_path . '/lib/jquery.jcarousel.pack.js', array('jquery'));
 		wp_enqueue_script( 'jcarousel_init', $js_path . '/init.js');
 	}
 
 	function carousel_css(){
-		$css_path = $this->plugin_path() . '/jcarousel';
+		$css_path = $this->plugin_path . '/jcarousel';
 		$skin_path = $css_path . '/skins/' . $this->skin . '/skin.css';
 
 		echo '<link rel="stylesheet" href="' . $css_path . '/lib/jquery.jcarousel.css" type="text/css" media="screen" />'."\n";
@@ -138,28 +146,25 @@ class deviantThumbsCarousel extends deviantThumbs{
 	function carousel($query, $count, $rand, $vertical, $cache){
 		#Set orientation
 		$orientation = $vertical ? 'vertical' : 'horizontal';
-		
+
+		#Generate output
 		$output = '<ul class="deviant-thumbs-' . $orientation . ' jcarousel-skin-' . $this->skin . '">' ."\n";
 		$output .= $this->generate($query, $count, $rand, $cache, '<li>', '</li>');
 		$output .= "</ul>\n";
-		
+
 		return $output;
-	}
-
-	function plugin_path(){
-		$siteurl = get_option("siteurl");
-		$siteurl = rtrim($siteurl, '/') . '/';
-		$plugin_path = $siteurl . "wp-content/plugins/" . dirname(plugin_basename(__FILE__));
-
-		return $plugin_path;
 	}
 }
 
 class deviantThumbsWidget extends deviantThumbsCarousel{
 	function __construct(){
+		add_action('plugins_loaded', array(&$this, 'widget_init'));
+	}
+
+	function widget_init(){
 		if( !function_exists('register_sidebar_widget') )
 			return;
-
+			
 		$options = array(
 			'title' => '',
 			'query' => 'by:',
@@ -192,7 +197,7 @@ class deviantThumbsWidget extends deviantThumbsCarousel{
 	}
 
 	function widget_control(){
-		global $deviant_thumbs_carousel_disable;
+		global $deviant_thumbs_carousel_enabled;
 		$options = $newoptions = get_option('deviant thumbs');
 		
 		#Set new options
@@ -236,7 +241,7 @@ class deviantThumbsWidget extends deviantThumbsCarousel{
 		<input id="deviant_thumbs-rand" name="deviant_thumbs-rand" type="checkbox" <?php if($rand) echo 'checked="checked"'; ?> value="1">
 	</p>
 
-	<?php if(!$deviant_thumbs_carousel_disable) { ?>
+	<?php if($deviant_thumbs_carousel_enabled) { ?>
 	<p><label for="deviant_thumbs-carousel">Show as a carousel:</label>
 		<input id="deviant_thumbs-carousel" name="deviant_thumbs-carousel" type="checkbox" <?php if($carousel) echo 'checked="checked"'; ?> value="1">
 	</p>
@@ -249,15 +254,7 @@ class deviantThumbsWidget extends deviantThumbsCarousel{
 
 global $deviantThumbs, $deviantThumbsCarousel, $deviantThumbsWidget;
 $deviantThumbsCarousel = new deviantThumbsCarousel();
-
-function deviant_thumbs_cache_init(){
-	chmod(dirname(__FILE__), 0757);
-}
-
-function deviant_thumbs_widget_init(){
-	global $deviantThumbsWidget;
-	$deviantThumbsWidget = new deviantThumbsWidget();
-}
+$deviantThumbsWidget = new deviantThumbsWidget();
 
 function deviant_thumbs($query, $count=3, $rand=FALSE, $cache=6, $before='<li>', $after='</li>'){
 	global $deviantThumbs;
@@ -272,6 +269,9 @@ function deviant_thumbs_carousel($query, $count=3, $rand=FALSE, $vertical=FALSE,
 	echo $deviantThumbsCarousel->carousel($query, $count, $rand, $vertical, $cache);
 }
 
+function deviant_thumbs_cache_init(){
+	chmod(dirname(__FILE__), 0757);
+}
+
 register_activation_hook(__FILE__, 'deviant_thumbs_cache_init');
-add_action('plugins_loaded', 'deviant_thumbs_widget_init');
 ?>
