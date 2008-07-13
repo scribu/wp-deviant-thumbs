@@ -3,7 +3,7 @@ Contributors: scribu
 Donate link: http://scribu.net/download/
 Tags: deviantart, thumbs, images
 Requires at least: 2.0
-Tested up to: 2.5.1
+Tested up to: 2.6
 Stable tag: trunk
 
 Display DeviantArt thumbs on your blog.
