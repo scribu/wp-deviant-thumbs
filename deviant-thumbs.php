@@ -1,7 +1,7 @@
 <?php
 /*
 Plugin Name: Deviant Thumbs
-Version: 1.4
+Version: 1.4.1
 Description: Display clickable deviation thumbs from your DeviantArt account.
 Author: scribu
 Author URI: http://scribu.net/
@@ -36,9 +36,9 @@ class deviantThumbs{
 	var $localfile = '';
 	var $thumbs = array();
 
-	function deviantThumbs(){
+	function __construct(){
 		$this->dir = dirname(__FILE__) . '/cache';
-		
+
 		if( is_writable($this->dir) )
 			$this->cacheon = TRUE;
 	}
@@ -156,13 +156,7 @@ class deviantThumbsCarousel extends deviantThumbs{
 
 class deviantThumbsWidget extends deviantThumbsCarousel{
 	function __construct(){
-		add_action('plugins_loaded', array(&$this, 'widget_init'));
-	}
 
-	function widget_init(){
-		if( !function_exists('register_sidebar_widget') )
-			return;
-			
 		$options = array(
 			'title' => '',
 			'query' => 'by:',
@@ -251,19 +245,29 @@ class deviantThumbsWidget extends deviantThumbsCarousel{
 }
 
 global $deviantThumbs, $deviantThumbsCarousel, $deviantThumbsWidget;
-$deviantThumbsCarousel = new deviantThumbsCarousel();
-$deviantThumbsWidget = new deviantThumbsWidget();
+
+function deviant_thumbs_init(){
+	global $deviantThumbsCarousel, $deviantThumbsWidget;
+
+	if( function_exists('register_sidebar_widget') )
+		$deviantThumbsWidget = new deviantThumbsWidget();
+	else
+		$deviantThumbsCarousel = new deviantThumbsCarousel();
+}
 
 function deviant_thumbs($query, $count=3, $rand=FALSE, $cache=6, $before='<li>', $after='</li>'){
 	global $deviantThumbs;
-	$deviantThumbs = new deviantThumbs();
+	if( !isset($deviantThumbs) )
+		$deviantThumbs = new deviantThumbs();
 
 	echo $deviantThumbs->generate($query, $count, $rand, $cache, $before, $after);
 }
 
 function deviant_thumbs_carousel($query, $count=3, $rand=FALSE, $vertical=FALSE, $cache=6){
 	global $deviantThumbsCarousel;
-	
+	if( !isset($deviantThumbsCarousel) )
+		$deviantThumbsCarousel = new deviantThumbsCarousel();
+
 	echo $deviantThumbsCarousel->carousel($query, $count, $rand, $vertical, $cache);
 }
 
@@ -271,5 +275,6 @@ function deviant_thumbs_cache_init(){
 	mkdir(dirname(__FILE__) . '/cache');
 }
 
+add_action('plugins_loaded', 'deviant_thumbs_init');
 register_activation_hook(__FILE__, 'deviant_thumbs_cache_init');
 ?>
