@@ -1,12 +1,12 @@
 === Deviant Thumbs ===
 Contributors: scribu
-Donate link: http://scribu.net/download/
+Donate link: http://scribu.net/projects/deviant-thumbs.html
 Tags: deviantart, thumbs, images
 Requires at least: 2.0
 Tested up to: 2.6
 Stable tag: trunk
 
-Display DeviantArt thumbs on your blog.
+Display DeviantArt thumbnails on your blog.
 
 == Description ==
 
@@ -15,11 +15,6 @@ Display a selection of linked thumbnails from DeviantArt on your WordPress blog.
 Since version 1.3, the thumbs are enclosed in a **scrollable carousel**, using [jCarousel](http://sorgalla.com/projects/jcarousel/), by Jan Sorgalla.
 
 Can be used with or without widgets.
-
-Future development:
-
-* shortcode tag
-* multiple cache files
 
 == Installation ==
 
