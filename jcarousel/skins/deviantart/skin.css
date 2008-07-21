@@ -1,11 +1,11 @@
 /* DeviantArt v6 skin */
 
-.jcarousel-skin-deviantart ul{
+.jcarousel-skin-deviantart ul {
 	margin: 0 !important;
 	padding: 0 !important;
 }
-	
-.jcarousel-skin-deviantart li:before{
+
+.jcarousel-skin-deviantart li:before {
 	content: "" !important;
 }
 
@@ -43,6 +43,11 @@
 	padding: 0 !important;
 }
 
+.jcarousel-skin-deviantart .jcarousel-item-horizontal img {
+	max-height: 104px;
+	height: expression( this.scrollHeight > 104 ? "104px" : "auto" );
+}
+
 .jcarousel-skin-deviantart .jcarousel-item-vertical {
 	height: auto !important;
 	width: 104px;
@@ -50,8 +55,9 @@
 	padding: 0 !important;
 }
 
-.jcarousel-skin-deviantart .jcarousel-item-vertical img{
-	margin: 0 auto;
+.jcarousel-skin-deviantart .jcarousel-item-vertical img {
+	max-width: 104px;
+	width: expression( if(this.clientWidth > 104) this.width=104 );
 }
 
 .jcarousel-skin-deviantart .jcarousel-item-placeholder {
@@ -62,13 +68,13 @@
 /**
  *  Horizontal Buttons
  */
-.jcarousel-skin-deviantart .jcarousel-next-horizontal, 
+.jcarousel-skin-deviantart .jcarousel-next-horizontal,
 .jcarousel-skin-deviantart .jcarousel-prev-horizontal {
 	position: absolute;
+	top: 62px;
 	width: 18px;
 	height: 19px;
 	cursor: pointer;
-	top: 62px;
 }
 .jcarousel-skin-deviantart .jcarousel-next-horizontal {
 	right: 10px;
@@ -99,13 +105,13 @@
 /**
  *  Vertical Buttons
  */
-.jcarousel-skin-deviantart .jcarousel-next-vertical, 
+.jcarousel-skin-deviantart .jcarousel-next-vertical,
 .jcarousel-skin-deviantart .jcarousel-prev-vertical {
 	position: absolute;
+	left: 63px;
 	width: 19px;
 	height: 18px;
 	cursor: pointer;
-	left: 63px;
 }
 .jcarousel-skin-deviantart .jcarousel-next-vertical {
 	bottom: 10px;
