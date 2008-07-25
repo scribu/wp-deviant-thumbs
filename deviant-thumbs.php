@@ -1,7 +1,7 @@
 <?php
 /*
 Plugin Name: Deviant Thumbs
-Version: 1.4.2
+Version: 1.4.3
 Description: Display clickable deviation thumbs from your DeviantArt account.
 Author: scribu
 Author URI: http://scribu.net/
@@ -39,10 +39,12 @@ class deviantThumbs {
 	function __construct() {
 		$this->dir = dirname(__FILE__) . '/cache';
 
+		register_activation_hook(__FILE__, array(&$this, 'init_cache'));
+
 		if ( is_writable($this->dir) )
 			$this->cacheon = TRUE;
 	}
-
+	
 	function generate($query, $count, $rand, $cache, $before, $after) {
 		$cache *= 3600;
 		$this->localfile = $this->dir . '/' . urlencode($query) . $count . '.txt';
@@ -62,21 +64,24 @@ class deviantThumbs {
 	}
 
 	function rebuild($query, $count) {
-		// Set pipe url
-		$url = urlencode('http://backend.deviantart.com/rss.xml?type=deviation&q=sort:time ' . $query);
-		$pipeurl = 'http://pipes.yahoo.com/pipes/pipe.run?_id=omFvVEBQ3RGP1fxUmLokhQ&_render=php';
-		$pipeurl .= '&url=' . $url;
+		$pipeurl = 'http://pipes.yahoo.com/pipes/pipe.run?_id=627f77f83f199773c5ce8a150a1e5977&_render=php';
+		$pipeurl .= '&query=' . urlencode($query);
 		$pipeurl .= '&count=' . $count;
 
 		$data = unserialize(file_get_contents($pipeurl));
-
+		
+		// Extract thumb list
 		$thumbs_nr = count($data['value']['items']);
 		for ($i=0; $i<$thumbs_nr; $i++) {
 			$tmp = $data['value']['items'][$i]['content'];
-			$this->thumbs[] = str_replace(' rel="nofollow" target="_blank"', '', $tmp);
+			$this->thumbs[] = str_replace ( ' rel="nofollow" target="_blank"', '', $tmp);
 		}
 
 		$this->update_cache();
+	}
+
+	function init_cache() {
+		mkdir($this->dir);
 	}
 
 	function update_cache() {
@@ -112,7 +117,8 @@ class deviantThumbsCarousel extends deviantThumbs {
 		if ( function_exists('plugin_url') )
 			$this->plugin_url = plugin_url();
 		else
-			$this->plugin_url = get_option('siteurl') . '/wp-content/plugins/' . plugin_basename(dirname(__FILE__)); // pre-2.6 compatibility
+			// Pre-2.6 compatibility
+			$this->plugin_url = get_option('siteurl') . '/wp-content/plugins/' . plugin_basename(dirname(__FILE__));
 
 		// Set skin
 		$this->skin = $deviant_thumbs_carousel_skin;
@@ -244,6 +250,7 @@ class deviantThumbsWidget extends deviantThumbsCarousel {
 
 global $deviantThumbs, $deviantThumbsCarousel, $deviantThumbsWidget;
 
+// Init
 function deviant_thumbs_init() {
 	global $deviantThumbsCarousel, $deviantThumbsWidget;
 
@@ -253,6 +260,9 @@ function deviant_thumbs_init() {
 		$deviantThumbsCarousel = new deviantThumbsCarousel();
 }
 
+add_action('plugins_loaded', 'deviant_thumbs_init');
+
+// Functions
 function deviant_thumbs($query, $count=3, $rand=FALSE, $cache=6, $before='<li>', $after='</li>') {
 	global $deviantThumbs;
 	if ( !isset($deviantThumbs) )
@@ -268,11 +278,4 @@ function deviant_thumbs_carousel($query, $count=3, $rand=FALSE, $vertical=FALSE,
 
 	echo $deviantThumbsCarousel->carousel($query, $count, $rand, $vertical, $cache);
 }
-
-function deviant_thumbs_cache_init() {
-	mkdir(dirname(__FILE__) . '/cache');
-}
-
-add_action('plugins_loaded', 'deviant_thumbs_init');
-register_activation_hook(__FILE__, 'deviant_thumbs_cache_init');
 ?>
