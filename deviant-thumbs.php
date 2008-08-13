@@ -5,7 +5,7 @@ Version: 1.4.5
 Description: Display clickable deviation thumbs from your DeviantArt account.
 Author: scribu
 Author URI: http://scribu.net/
-Plugin URI: http://scribu.net/downloads/deviant-thumbs.html
+Plugin URI: http://scribu.net/projects/deviant-thumbs.html
 */
 
 /*
