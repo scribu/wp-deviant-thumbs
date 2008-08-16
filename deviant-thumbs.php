@@ -1,7 +1,7 @@
 <?php
 /*
 Plugin Name: Deviant Thumbs
-Version: 1.4.5
+Version: 1.4.6
 Description: Display clickable deviation thumbs from your DeviantArt account.
 Author: scribu
 Author URI: http://scribu.net/
@@ -31,16 +31,12 @@ $deviant_thumbs_carousel_skin = 'deviantart';
 /************************************/
 
 class deviantThumbs {
-	var $cacheon = FALSE;
 	var $dir = '';
 	var $localfile = '';
 	var $thumbs = array();
 
 	function __construct() {
 		$this->dir = dirname(__FILE__) . '/cache';
-
-		if ( is_writable($this->dir) )
-			$this->cacheon = TRUE;
 	}
 	
 	function generate($query, $count, $rand, $cache, $before, $after) {
@@ -79,10 +75,11 @@ class deviantThumbs {
 	}
 
 	function update_cache() {
-		if (!$this->cacheon)
+		$fp = @fopen($this->localfile, "w");
+		
+		if ( $fp === FALSE )
 			return;
 
-		$fp = fopen($this->localfile, "w");
 		$data = implode("\n", $this->thumbs);
 		fwrite($fp, $data);
 		fclose($fp);
@@ -94,24 +91,20 @@ class deviantThumbs {
 }
 
 // Init
+register_activation_hook(__FILE__, create_function('', 'mkdir(dirname(__FILE__) . "/cache", 757);') );
+add_action('plugins_loaded', 'deviant_thumbs_init');
+
 global $deviantThumbs, $deviantThumbsCarousel, $deviantThumbsWidget;
 
 function deviant_thumbs_init() {
 	global $deviant_thumbs_carousel_enabled, $deviantThumbsCarousel, $deviantThumbsWidget;
 
 	if ( $deviant_thumbs_carousel_enabled )
-		require_once ('deviantThumbsCarousel.class.php');
+		require_once ('carousel.php');
 
 	if ( function_exists('register_sidebar_widget') )
-		require_once ('deviantThumbsWidget.class.php');
+		require_once ('widget.php');
 }
-
-function deviant_thumbs_init_cache() {
-	mkdir(dirname(__FILE__) . '/cache');
-}
-
-add_action('plugins_loaded', 'deviant_thumbs_init');
-register_activation_hook(__FILE__, 'deviant_thumbs_init_cache');
 
 // Functions
 function deviant_thumbs($query, $count = 3, $rand = FALSE, $cache = 6, $before = '<li>', $after = '</li>') {
