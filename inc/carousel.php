@@ -88,10 +88,10 @@ class deviantThumbsCarousel extends deviantThumbs {
 
 	function get_plugin_url() {
 		if ( function_exists('plugins_url') )
-			return plugins_url( plugin_basename( dirname(__FILE__) ) );
+			return plugins_url( plugin_basename( dirname(dirname(__FILE__))) );
 		else
 			// Pre-2.6 compatibility
-			return get_option('siteurl') . '/wp-content/plugins/' . plugin_basename( dirname(__FILE__) );
+			return get_option('siteurl') . '/wp-content/plugins/' . plugin_basename( dirname(dirname(__FILE__)) );
 	}
 }
 

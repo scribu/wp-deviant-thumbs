@@ -100,10 +100,10 @@ function deviant_thumbs_init() {
 	global $deviant_thumbs_carousel_enabled, $deviantThumbsCarousel, $deviantThumbsWidget;
 
 	if ( $deviant_thumbs_carousel_enabled )
-		require_once ('carousel.php');
+		require_once ('inc/carousel.php');
 
 	if ( function_exists('register_sidebar_widget') )
-		require_once ('widget.php');
+		require_once ('inc/widget.php');
 }
 
 // Functions
