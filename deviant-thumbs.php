@@ -1,7 +1,7 @@
 <?php
 /*
 Plugin Name: Deviant Thumbs
-Version: 1.5
+Version: 1.5.1
 Description: Display clickable deviation thumbs from deviantART.
 Author: scribu
 Author URI: http://scribu.net/
@@ -25,13 +25,12 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-$deviant_thumbs_carousel_enabled = TRUE;	// Set to FALSE if you don't want to use carousels at all.
-
+define('DTHUMBSCAROUSEL', TRUE);		// Set to FALSE if you don't want to use carousels at all.
 define('DTHUMBSCACHE', dirname(__FILE__) . '/cache');
 
 class deviantThumbs {
-	var $localfile = '';
-	var $thumbs = array();
+	var $localfile;
+	var $thumbs;
 
 	function generate($query, $count, $rand, $cache, $before, $after) {
 		$cache *= 3600;
@@ -86,15 +85,15 @@ class deviantThumbs {
 }
 
 // Init
-register_activation_hook(__FILE__, create_function('', 'mkdir(DTHUMBSCACHE, 757);') );
+register_activation_hook(__FILE__, create_function('', '@mkdir(DTHUMBSCACHE, 757);') );
 add_action('plugins_loaded', 'deviant_thumbs_init');
 
 global $deviantThumbs, $deviantThumbsCarousel, $deviantThumbsWidget;
 
 function deviant_thumbs_init() {
-	global $deviant_thumbs_carousel_enabled, $deviantThumbsCarousel, $deviantThumbsWidget;
+	global $deviantThumbsCarousel, $deviantThumbsWidget;
 
-	if ( $deviant_thumbs_carousel_enabled )
+	if ( DTHUMBSCAROUSEL )
 		require_once ('inc/carousel/carousel.php');
 
 	if ( function_exists('register_sidebar_widget') )

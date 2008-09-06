@@ -60,9 +60,6 @@ $deviantThumbsCarousel = new deviantThumbsCarousel();
 function deviant_thumbs_carousel($query, $count = 3, $rand = FALSE, $cache = 6) {
 	global $deviantThumbsCarousel;
 
-	if ( !isset($deviantThumbsCarousel) )
-		$deviantThumbsCarousel = new deviantThumbsCarousel();
-
 	echo $deviantThumbsCarousel->carousel($query, $count, $rand, $vertical, $cache);
 }
 ?>
