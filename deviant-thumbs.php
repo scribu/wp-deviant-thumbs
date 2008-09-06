@@ -1,8 +1,8 @@
 <?php
 /*
 Plugin Name: Deviant Thumbs
-Version: 1.4.7
-Description: Display clickable deviation thumbs from your DeviantArt account.
+Version: 1.5
+Description: Display clickable deviation thumbs from deviantART.
 Author: scribu
 Author URI: http://scribu.net/
 Plugin URI: http://scribu.net/projects/deviant-thumbs.html
@@ -25,23 +25,18 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-/******** Carousel Options  **********/
 $deviant_thumbs_carousel_enabled = TRUE;	// Set to FALSE if you don't want to use carousels at all.
-$deviant_thumbs_carousel_skin = 'deviantart';
-/************************************/
+
+define('DTHUMBSCACHE', dirname(__FILE__) . '/cache');
 
 class deviantThumbs {
-	var $dir = '';
 	var $localfile = '';
 	var $thumbs = array();
 
-	function __construct() {
-		$this->dir = dirname(__FILE__) . '/cache';
-	}
-	
 	function generate($query, $count, $rand, $cache, $before, $after) {
 		$cache *= 3600;
-		$this->localfile = $this->dir . '/' . urlencode($query) . $count . '.txt';
+
+		$this->localfile = DTHUMBSCACHE . '/' . urlencode($query) . '.txt';
 
 		if ( file_exists($this->localfile) && (time()-filemtime($this->localfile) <= $cache) )
 			$this->use_cache();
@@ -60,7 +55,6 @@ class deviantThumbs {
 	function rebuild($query, $count) {
 		$pipeurl = 'http://pipes.yahoo.com/pipes/pipe.run?_id=627f77f83f199773c5ce8a150a1e5977&_render=php';
 		$pipeurl .= '&query=' . urlencode($query);
-		$pipeurl .= '&count=' . $count;
 
 		$data = unserialize(file_get_contents($pipeurl));
 		
@@ -81,6 +75,7 @@ class deviantThumbs {
 			return;
 
 		$data = implode("\n", $this->thumbs);
+
 		fwrite($fp, $data);
 		fclose($fp);
 	}
@@ -91,7 +86,7 @@ class deviantThumbs {
 }
 
 // Init
-register_activation_hook(__FILE__, create_function('', 'mkdir(dirname(__FILE__) . "/cache", 757);') );
+register_activation_hook(__FILE__, create_function('', 'mkdir(DTHUMBSCACHE, 757);') );
 add_action('plugins_loaded', 'deviant_thumbs_init');
 
 global $deviantThumbs, $deviantThumbsCarousel, $deviantThumbsWidget;
@@ -100,7 +95,7 @@ function deviant_thumbs_init() {
 	global $deviant_thumbs_carousel_enabled, $deviantThumbsCarousel, $deviantThumbsWidget;
 
 	if ( $deviant_thumbs_carousel_enabled )
-		require_once ('inc/carousel.php');
+		require_once ('inc/carousel/carousel.php');
 
 	if ( function_exists('register_sidebar_widget') )
 		require_once ('inc/widget.php');
@@ -114,17 +109,5 @@ function deviant_thumbs($query, $count = 3, $rand = FALSE, $cache = 6, $before =
 		$deviantThumbs = new deviantThumbs();
 
 	echo $deviantThumbs->generate($query, $count, $rand, $cache, $before, $after);
-}
-
-function deviant_thumbs_carousel($query, $count = 3, $rand = FALSE, $vertical = FALSE, $cache = 6) {
-	global $deviantThumbsCarousel, $deviant_thumbs_carousel_enabled;
-
-	if ( !$deviant_thumbs_carousel_enabled )
-		return;
-
-	if ( !isset($deviantThumbsCarousel) )
-		$deviantThumbsCarousel = new deviantThumbsCarousel();
-
-	echo $deviantThumbsCarousel->carousel($query, $count, $rand, $vertical, $cache);
 }
 ?>

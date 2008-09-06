@@ -4,24 +4,24 @@ Donate link: http://scribu.net/projects
 Tags: deviantart, thumbs, images
 Requires at least: 2.0
 Tested up to: 2.6+
-Stable tag: 1.4.7
+Stable tag: 1.5
 
 Display deviantART thumbnails on your blog.
+
 
 == Description ==
 
 Display a selection of linked thumbnails from deviantART on your WordPress blog.
 
-Since version 1.3, the thumbs are enclosed in a **scrollable carousel**, using [jCarousel](http://sorgalla.com/projects/jcarousel/), by Jan Sorgalla.
+Since version 1.5, the thumbs are enclosed in a **scrollable carousel**, using [jCarousel Lite](http://www.gmarwaha.com/jquery/jcarousellite/).
 
 Can be used with or without widgets.
+
 
 == Installation ==
 
 1. Upload the `deviant-thumbs` directory to the `/wp-content/plugins/` directory.
 1. Activate the plugin through the 'Plugins' menu in WordPress.
-
-== Usage ==
 
 = General Usage (With Widget) =
 
@@ -40,15 +40,14 @@ Can be used with or without widgets.
   </ul>
 <?php endif; ?>`
 
-*Parameters*
+*Parameters:*
 
 * *$query* is a search string used on [deviantART](http://browse.deviantart.com/). ( Example: 'by:scribu in:photography' )
-* *$count* is the number of thumbs to display. The maximum is 24.
+* *$count* is the number of thumbs to display.
 * *$rand* is a flag to randomise thumbs or not. Can be `TRUE` or `FALSE`.
-* *$vertical* is a flag to display a vertical or horizontal carousel. Can be `TRUE` or `FALSE`.
 * *$cache* is the number of hours after which the cache has to be rebuilt. This creates a text file in the directory of the plugin, which must be writable.
 
-**Simple (without carousel)**
+**Simple**
 
 `<?php if (function_exists('deviant_thumbs')): ?>
   <ul class="deviant-thumbs">
@@ -56,7 +55,7 @@ Can be used with or without widgets.
   </ul>
 <?php endif; ?>`
 
-*Parameters*
+*Parameters:*
 
 * *$query* is a search string used on [deviantART](http://browse.deviantart.com/). ( Example: 'by:scribu in:photography' )
 * *$count* is the number of thumbs to display. The maximum is 24.
@@ -72,12 +71,10 @@ Can be used with or without widgets.
 
 Please see the information about [using the main search](http://help.deviantart.com/577/) on deviantART.
 
-= Can I modifify the carousel skin? =
+= How can I modifify the carousel skin? =
 
-Yes, you can edit the files in `deviant-thumbs/jcarousel/skins/deviantart/`.
-
-Or, you can make a new one and place it in the skins directory. After that, you have to modify $deviant_thumbs_carousel_skin in the main plugin file, 'deviant-thumbs.php'.
+You can edit 'deviant-thumbs/inc/carousel/carousel.css/'.
 
 = Why isn't the cache working? =
 
-Probably because the plugin folder doesn't have writting permissions. If you don't know how to set file permissions, please read this [Codex tutorial](http://codex.wordpress.org/Changing_File_Permissions).
+Probably because the plugin can't create the folder 'deviant-thumbs/cache'. You can try to create the folder manually and set it's permissions to 757. See [Changing File Permissions](http://codex.wordpress.org/Changing_File_Permissions).

@@ -1,0 +1,37 @@
+/* DeviantArt v6 skin */
+
+#deviant-thumbs-carousel {
+	width: 113px;
+	padding: 38px 10px;
+	position: relative;
+	-moz-border-radius: 10px;
+	background: #4D625D;
+	border: 1px solid #BECAC6;
+}
+#deviant-thumbs-carousel li:before, .carousel-container li:after {content: "" !important}
+#deviant-thumbs-carousel li {width: 113px !important; height: auto !important; text-align:center; margin: 0 0 10px !important; padding: 0 !important}
+#deviant-thumbs-carousel li img {border: 0; max-width: 113px; width: expression( if(this.clientWidth > 113) this.width=113 )}
+
+/* Buttons */
+
+#deviant-thumbs-carousel #dt-prev,
+#deviant-thumbs-carousel #dt-next {
+	background: transparent url('carousel.gif') no-repeat;
+	width: 18px;
+	height: 18px;
+	position: absolute;
+	left: 56px;
+	cursor: pointer;
+}
+
+#deviant-thumbs-carousel #dt-prev {top: 10px; background-position: -18px 0}
+#deviant-thumbs-carousel #dt-next {bottom: 10px; background-position: 0 0}
+
+#deviant-thumbs-carousel #dt-prev:hover,
+#deviant-thumbs-carousel #dt-prev:active {
+	background-position: -18px -18px;
+}
+#deviant-thumbs-carousel #dt-next:hover,
+#deviant-thumbs-carousel #dt-next:active {
+	background-position: 0 -18px;
+}

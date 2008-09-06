@@ -1,13 +1,17 @@
 <?php
 class deviantThumbsWidget extends deviantThumbs {
+	var $carouselObj;
+
 	function __construct() {
-		global $deviant_thumbs_carousel_enabled;
+		global $deviantThumbsCarousel;
+
+		$this->carouselObj = $deviantThumbsCarousel;
 
 		$options = array(
 			'title' => '',
 			'query' => 'by:',
 			'count' => 3,
-			'carousel' => $deviant_thumbs_carousel_enabled,
+			'carousel' => (bool) $this->carouselObj,
 			'rand' => 0,
 			'cache' => 6
 		);
@@ -19,17 +23,15 @@ class deviantThumbsWidget extends deviantThumbs {
 	}
 
 	function widget($args) {
-		global $deviantThumbsCarousel, $deviant_thumbs_carousel_enabled;
-
 		extract($args);
 		extract(get_option('deviant thumbs'));
 
 		echo $before_widget;
 		echo $before_title . $title . $after_title;
-		if ( $carousel && $deviant_thumbs_carousel_enabled )
-			echo $deviantThumbsCarousel->carousel($query, $count, $rand, TRUE, $cache);
+		if ( $carousel && $this->carouselObj)
+			echo $this->carouselObj->carousel($query, $count, $rand, $cache);
 		else {
-			echo '<ul id="deviant-thumbs-sidebar">';
+			echo '<ul id="deviant-thumbs">';
 			echo $this->generate($query, $count, $rand, $cache, '<li>', '</li>');
 			echo '</ul>';
 		}
@@ -37,7 +39,6 @@ class deviantThumbsWidget extends deviantThumbs {
 	}
 
 	function widget_control() {
-		global $deviantThumbsCarousel, $deviant_thumbs_carousel_enabled;
 		$options = $newoptions = get_option('deviant thumbs');
 
 		// Set new options
@@ -45,8 +46,8 @@ class deviantThumbsWidget extends deviantThumbs {
 			$newoptions['title'] = strip_tags(stripslashes($_POST['deviant_thumbs-title']));
 			$newoptions['query'] = strip_tags(stripslashes($_POST['deviant_thumbs-query']));
 			$newoptions['count'] = (int) $_POST['deviant_thumbs-count'];
-			$newoptions['carousel'] = $_POST['deviant_thumbs-carousel'];
-			$newoptions['rand'] = $_POST['deviant_thumbs-rand'];
+			$newoptions['carousel'] = (bool) $_POST['deviant_thumbs-carousel'];
+			$newoptions['rand'] = (bool) $_POST['deviant_thumbs-rand'];
 			$newoptions['cache'] = (int) $_POST['deviant_thumbs-cache'];
 		}
 
@@ -77,11 +78,11 @@ class deviantThumbsWidget extends deviantThumbs {
 		<input id="deviant_thumbs-cache" name="deviant_thumbs-cache" type="text" value="<?= $cache; ?>" style="width: 20px;" /> hours.
 	</p>
 
-	<p><label for="deviant_thumbs-rand">Show thumbs in a random order:</label>
+	<p><label for="deviant_thumbs-rand">Show random thumbs:</label>
 		<input id="deviant_thumbs-rand" name="deviant_thumbs-rand" type="checkbox" <?php if ($rand) echo 'checked="checked"'; ?> value="1">
 	</p>
 
-	<?php if ( $deviant_thumbs_carousel_enabled ) { ?>
+	<?php if ( $this->carouselObj ) { ?>
 	<p><label for="deviant_thumbs-carousel">Show as a carousel:</label>
 		<input id="deviant_thumbs-carousel" name="deviant_thumbs-carousel" type="checkbox" <?php if ($carousel) echo 'checked="checked"'; ?> value="1">
 	</p>
