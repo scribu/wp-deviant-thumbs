@@ -4,50 +4,40 @@ Donate link: http://scribu.net/projects
 Tags: deviantart, thumbs, images
 Requires at least: 2.0
 Tested up to: 2.6+
-Stable tag: trunk
+Stable tag: 2.5.1.1
 
 Display deviantART thumbnails on your blog.
 
 
 == Description ==
 
-Display a selection of linked thumbnails from deviantART on your WordPress blog.
+Display linked thumbnails from deviantART on your WordPress blog.
 
-Since version 1.5, the thumbs are enclosed in a **scrollable carousel**, using [jCarousel Lite](http://www.gmarwaha.com/jquery/jcarousellite/).
+**Features:**
 
-Can be used with or without widgets.
+* **Scrollable carousel**: your thumbs can be displayed in a dA style carousel
+* **Inline deviations**: the code *:thumb98765:* inside a post becomes a thumbnail, just like on dA
+* **Widget support** and **flexible template tags**
 
+Note: From version 1.6 onwards, PHP5 is required.
 
 == Installation ==
 
 1. Upload the `deviant-thumbs` directory to the `/wp-content/plugins/` directory.
 1. Activate the plugin through the 'Plugins' menu in WordPress.
 
-= General Usage (With Widget) =
+= Widget Usage =
 
-1. Go to **WP-Admin -> Design -> Widgets**.
+1. Go to the widgets panel
 1. Add the Deviant Thumbs widget to your sidebar.
 1. Set the desired settings for the widget.
 1. Click 'Save Changes'.
 
-= Function Call (Outside WP loop) =
+= Template tags =
 
-**Carousel**
+These are meant to be used outside The Loop.
 
-`<?php if (function_exists('deviant_thumbs_carousel')): ?>
-  <ul class="deviant-thumbs">
-    <?php deviant_thumbs_carousel($query, $count = 3, $rand = FALSE, $vertical = FALSE, $cache = 6); ?>
-  </ul>
-<?php endif; ?>`
-
-*Parameters:*
-
-* *$query* is a search string used on [deviantART](http://browse.deviantart.com/). ( Example: 'by:scribu in:photography' )
-* *$count* is the number of thumbs to display.
-* *$rand* is a flag to randomise thumbs or not. Can be `TRUE` or `FALSE`.
-* *$cache* is the number of hours after which the cache has to be rebuilt. This creates a text file in the directory of the plugin, which must be writable.
-
-**Simple**
+**Thumb list**
 
 `<?php if (function_exists('deviant_thumbs')): ?>
   <ul class="deviant-thumbs">
@@ -64,12 +54,24 @@ Can be used with or without widgets.
 * *$before* is a string inserted before each thumb. It can be a HTML tag or just plain text.
 * *$after* is a string inserted after each thumb. It can also be a HTML tag or just plain text.
 
+**Carousel**
+
+`<?php if (function_exists('deviant_thumbs_carousel')): ?>
+    <?php deviant_thumbs_carousel($query, $count = 3, $rand = FALSE, $vertical = FALSE, $cache = 6); ?>
+<?php endif; ?>`
+
+*Parameters:*
+
+* *$query* is a search string used on [deviantART](http://browse.deviantart.com/). ( Example: 'by:scribu in:photography' )
+* *$count* is the number of thumbs to display.
+* *$rand* is a flag to randomise thumbs or not. Can be `TRUE` or `FALSE`.
+* *$cache* is the number of hours after which the cache has to be rebuilt. This creates a text file in the directory of the plugin, which must be writable.
 
 == Frequently Asked Questions ==
 
 = How can I choose which thumbs to display? =
 
-Please see the information about [using the main search](http://help.deviantart.com/577/) on deviantART.
+You enter a search string (the thumbs are found using the search engine from dA). Read more about [search options](http://help.deviantart.com/577/) on deviantART.
 
 = How can I modifify the carousel skin? =
 

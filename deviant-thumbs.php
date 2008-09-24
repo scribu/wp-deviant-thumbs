@@ -1,14 +1,12 @@
 <?php
 /*
 Plugin Name: Deviant Thumbs
-Version: 1.5.1.1
+Version: 1.6b
 Description: Display clickable deviation thumbs from deviantART.
 Author: scribu
 Author URI: http://scribu.net/
 Plugin URI: http://scribu.net/projects/deviant-thumbs.html
-*/
 
-/*
 Copyright (C) 2008 scribu.net (scribu AT gmail DOT com)
 
 This program is free software; you can redistribute it and/or modify
@@ -25,90 +23,94 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-define('DTHUMBSCAROUSEL', TRUE);		// Set to FALSE if you don't want to use carousels at all.
-define('DTHUMBSCACHE', dirname(__FILE__) . '/cache');
+define('DTHUMBS_INLINE', TRUE);		// Set to FALSE if you don't want to use inline thumbs.
+define('DTHUMBS_CAROUSEL', TRUE);	// Set to FALSE if you don't want to use carousels at all.
+define('DTHUMBS_WIDGET', TRUE);		// Set to FALSE if you don't want to use the widget.
+
+define('DTHUMBS_CACHE_DIR', dirname(__FILE__) . '/cache');
 
 class deviantThumbs {
-	var $localfile;
-	var $thumbs;
-
-	function generate($query, $count, $rand, $cache, $before, $after) {
+	static function generate($query, $count, $rand, $cache, $before, $after) {
 		$cache *= 3600;
 
-		$this->localfile = DTHUMBSCACHE . '/' . urlencode($query) . '.txt';
+		$file = DTHUMBS_CACHE_DIR . '/' . urlencode($query) . '.txt';
 
-		if ( file_exists($this->localfile) && (time()-filemtime($this->localfile) <= $cache) )
-			$this->use_cache();
+		if ( file_exists($file) && (time()-filemtime($file) <= $cache) )
+			$thumbs = self::get_from_cache($file);
 		else
-			$this->rebuild($query, $count);
+			$thumbs = self::get_from_pipe($query, $count, $file);
 
-		if ($rand) shuffle($this->thumbs);
+		if ( $rand )
+			shuffle($thumbs);
 
-		$thumbs_nr = count($this->thumbs);
-		for ($i=0; $i<$count && $i<$thumbs_nr; $i++)
-			$output .= $before . $this->thumbs[$i] . $after ."\n";
+		$thumbs_nr = count($thumbs);
+		for ( $i=0; $i<$count && $i<$thumbs_nr; $i++ )
+			$output .= $before . $thumbs[$i] . $after . "\n";
 
 		return $output;
 	}
 
-	function rebuild($query, $count) {
+	private function get_from_pipe($query, $count, $file) {
 		$pipeurl = 'http://pipes.yahoo.com/pipes/pipe.run?_id=627f77f83f199773c5ce8a150a1e5977&_render=php';
 		$pipeurl .= '&query=' . urlencode($query);
 
 		$data = unserialize(file_get_contents($pipeurl));
-		
+
 		// Extract thumb list
 		$thumbs_nr = count($data['value']['items']);
 		for ($i=0; $i<$thumbs_nr; $i++) {
 			$tmp = $data['value']['items'][$i]['content'];
-			$this->thumbs[] = str_replace ( ' rel="nofollow" target="_blank"', '', $tmp);
+			$thumbs[] = str_replace(' rel="nofollow" target="_blank"', '', $tmp);
 		}
 
-		$this->update_cache();
+		self::update_cache($thumbs, $file);
+
+		return $thumbs;
 	}
 
-	function update_cache() {
-		$fp = @fopen($this->localfile, "w");
-		
-		if ( $fp === FALSE )
+	private function update_cache($thumbs, $file) {
+		$fp = @fopen($file, "w");
+
+		if ( FALSE === $fp )
 			return;
 
-		$data = implode("\n", $this->thumbs);
+		$data = implode("\n", $thumbs);
 
 		fwrite($fp, $data);
 		fclose($fp);
 	}
 
-	function use_cache() {
-		$this->thumbs = explode("\n", file_get_contents($this->localfile) );
+	private function get_from_cache($file) {
+		return explode("\n", file_get_contents($file) );
 	}
 }
 
-// Init
-add_action('plugins_loaded', 'deviant_thumbs_init');
-
-global $deviantThumbs, $deviantThumbsCarousel, $deviantThumbsWidget;
-
-function deviant_thumbs_init() {
-	global $deviantThumbsCarousel, $deviantThumbsWidget;
-
-	if ( !is_dir(DTHUMBSCACHE) )
-		@mkdir(DTHUMBSCACHE);
-
-	if ( DTHUMBSCAROUSEL )
-		require_once ('inc/carousel/carousel.php');
-
-	if ( function_exists('register_sidebar_widget') )
-		require_once ('inc/widget.php');
-}
-
-// Functions
+// Template tag
 function deviant_thumbs($query, $count = 3, $rand = FALSE, $cache = 6, $before = '<li>', $after = '</li>') {
-	global $deviantThumbs;
-
-	if ( !isset($deviantThumbs) )
-		$deviantThumbs = new deviantThumbs();
-
-	echo $deviantThumbs->generate($query, $count, $rand, $cache, $before, $after);
+	echo deviantThumbs::generate($query, $count, $rand, $cache, $before, $after);
 }
-?>
+
+// Init
+function deviant_thumbs_init() {
+	global $deviantThumbsCarousel;
+
+	if ( !is_dir(DTHUMBS_CACHE_DIR) )
+		@mkdir(DTHUMBS_CACHE_DIR);
+
+	$inc = dirname(__FILE__) . '/inc';
+
+	if ( DTHUMBS_INLINE )
+		include_once "$inc/inline.php";
+
+	if ( DTHUMBS_CAROUSEL )
+		include_once "$inc/carousel/carousel.php";
+
+	if ( DTHUMBS_WIDGET ) {
+		include_once "$inc/widget.php";
+		$widget = new deviantThumbsWidget();
+		register_activation_hook(__FILE__, array(&$widget, 'install'));
+	}
+}
+
+deviant_thumbs_init();
+
