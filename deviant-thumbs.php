@@ -1,7 +1,7 @@
 <?php
 /*
 Plugin Name: Deviant Thumbs
-Version: 1.6
+Version: 1.6.1
 Description: Display clickable deviation thumbs from deviantART.
 Author: scribu
 Author URI: http://scribu.net/
@@ -29,14 +29,14 @@ define('DTHUMBS_WIDGET', TRUE);		// Set to FALSE if you don't want to use the wi
 
 define('DTHUMBS_CACHE_DIR', dirname(__FILE__) . '/cache');
 
-class deviantThumbs {
-	static function generate($query, $count, $rand, $cache, $before, $after) {
+abstract class deviantThumbs {
+	function generate($query, $count, $rand, $cache, $before, $after) {
 		$cache *= 3600;
 
 		$file = DTHUMBS_CACHE_DIR . '/' . urlencode($query) . '.txt';
 
 		if ( file_exists($file) && (time()-filemtime($file) <= $cache) )
-			$thumbs = self::get_from_cache($file);
+			$thumbs = explode("\n", file_get_contents($file));
 		else
 			$thumbs = self::get_from_pipe($query, $count, $file);
 
@@ -63,25 +63,9 @@ class deviantThumbs {
 			$thumbs[] = str_replace(' rel="nofollow" target="_blank"', '', $tmp);
 		}
 
-		self::update_cache($thumbs, $file);
+		file_put_contents($file, implode("\n", $thumbs));
 
 		return $thumbs;
-	}
-
-	private function update_cache($thumbs, $file) {
-		$fp = @fopen($file, "w");
-
-		if ( FALSE === $fp )
-			return;
-
-		$data = implode("\n", $thumbs);
-
-		fwrite($fp, $data);
-		fclose($fp);
-	}
-
-	private function get_from_cache($file) {
-		return explode("\n", file_get_contents($file) );
 	}
 }
 
@@ -108,6 +92,22 @@ function deviant_thumbs_init() {
 		$widget = new deviantThumbsWidget();
 		register_activation_hook(__FILE__, array(&$widget, 'install'));
 	}
+
+	register_deactivation_hook(__FILE__, 'deviant_thumbs_clear_cache');
+}
+
+function deviant_thumbs_clear_cache() {
+	if ( !is_dir(DTHUMBS_CACHE_DIR) )
+		return;
+
+	$dir_handle = opendir(DTHUMBS_CACHE_DIR);
+
+	while ( $file = readdir($dir_handle) )
+		if ( $file != "." && $file != ".." )
+			unlink(DTHUMBS_CACHE_DIR."/".$file);
+
+	closedir($dir_handle);
+	@rmdir(DTHUMBS_CACHE_DIR);
 }
 
 deviant_thumbs_init();

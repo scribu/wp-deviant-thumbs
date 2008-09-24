@@ -1,6 +1,6 @@
 <?php
-class deviantThumbsCarousel extends deviantThumbs {
-	static function carousel($query, $count, $rand, $cache) {
+abstract class deviantThumbsCarousel extends deviantThumbs {
+	function carousel($query, $count, $rand, $cache) {
 		ob_start();
 		echo self::maybe_add_scripts();
 ?>
