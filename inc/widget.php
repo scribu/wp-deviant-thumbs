@@ -1,10 +1,6 @@
 <?php
 class deviantThumbsWidget extends deviantThumbs {
-	function deviantThumbsWidget() {
-		add_action('plugins_loaded', array(&$this, 'init'));
-	}
-
-	function install() {
+	public function install() {
 		$options = array(
 			'title' => 'Deviant Thumbs',
 			'query' => 'by:',
@@ -17,7 +13,7 @@ class deviantThumbsWidget extends deviantThumbs {
 		add_option('deviant thumbs', $options);
 	}
 	
-	function init() {
+	public function init() {
 		if ( !function_exists('register_sidebar_widget') )
 			return;
 
@@ -25,7 +21,7 @@ class deviantThumbsWidget extends deviantThumbs {
 		register_widget_control('Deviant Thumbs', array(&$this, 'control'), 250, 200);
 	}
 
-	function display($args) {
+	public function display($args) {
 		extract($args);
 		extract(get_option('deviant thumbs'));
 
@@ -43,32 +39,9 @@ class deviantThumbsWidget extends deviantThumbs {
 		echo $after_widget;
 	}
 
-	private function options() {
-		$oldoptions = get_option('deviant thumbs');
-
-		if ( !$_POST['deviant_thumbs-submit'] )
-			return $oldoptions;
-
-		// Set new options
-		$newoptions['title'] = strip_tags(stripslashes($_POST['deviant_thumbs-title']));
-		$newoptions['query'] = strip_tags(stripslashes($_POST['deviant_thumbs-query']));
-		$newoptions['count'] = (int) $_POST['deviant_thumbs-count'];
-		$newoptions['carousel'] = (bool) $_POST['deviant_thumbs-carousel'];
-		$newoptions['rand'] = (bool) $_POST['deviant_thumbs-rand'];
-		$newoptions['cache'] = (int) $_POST['deviant_thumbs-cache'];
-
-		if ( $oldoptions == $newoptions )
-			return $oldoptions;
-
-		update_option('deviant thumbs', $newoptions);
-
-		return $newoptions;
-	}
-
-	function control() {
+	public function control() {
 		extract(self::options());
 ?>
-
 	<p><label for="deviant_thumbs-title">Title:</label>
 		<input name="deviant_thumbs-title" type="text" value="<?php echo $title; ?>" style="width: 195px" />
 	</p>
@@ -97,7 +70,33 @@ class deviantThumbsWidget extends deviantThumbs {
 	<?php } ?>
 
 	<input name="deviant_thumbs-submit" type="hidden" value="1" />
-
 <?php }
+
+	private function options() {
+		$oldoptions = get_option('deviant thumbs');
+
+		if ( !$_POST['deviant_thumbs-submit'] )
+			return $oldoptions;
+
+		// Set new options
+		$newoptions['title'] = strip_tags(stripslashes($_POST['deviant_thumbs-title']));
+		$newoptions['query'] = strip_tags(stripslashes($_POST['deviant_thumbs-query']));
+		$newoptions['count'] = (int) $_POST['deviant_thumbs-count'];
+		$newoptions['carousel'] = (bool) $_POST['deviant_thumbs-carousel'];
+		$newoptions['rand'] = (bool) $_POST['deviant_thumbs-rand'];
+		$newoptions['cache'] = (int) $_POST['deviant_thumbs-cache'];
+
+		if ( $oldoptions == $newoptions )
+			return $oldoptions;
+
+		update_option('deviant thumbs', $newoptions);
+
+		return $newoptions;
+	}
 }
+
+// Init
+$deviantThumbsWidget = new deviantThumbsWidget(); 
+register_activation_hook(__FILE__, array(&$deviantThumbsWidget, 'install'));
+add_action('plugins_loaded', array(&$deviantThumbsWidget, 'init'));
 

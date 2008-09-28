@@ -1,7 +1,7 @@
 <?php
 /*
 Plugin Name: Deviant Thumbs
-Version: 1.6.1
+Version: 1.6.2b
 Description: Display clickable deviation thumbs from deviantART.
 Author: scribu
 Author URI: http://scribu.net/
@@ -24,13 +24,32 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
 define('DTHUMBS_INLINE', TRUE);		// Set to FALSE if you don't want to use inline thumbs.
-define('DTHUMBS_CAROUSEL', TRUE);	// Set to FALSE if you don't want to use carousels at all.
+define('DTHUMBS_CAROUSEL', TRUE);	// Set to FALSE if you don't want to use the carousel at all.
 define('DTHUMBS_WIDGET', TRUE);		// Set to FALSE if you don't want to use the widget.
 
-define('DTHUMBS_CACHE_DIR', dirname(__FILE__) . '/cache');
-
 abstract class deviantThumbs {
-	function generate($query, $count, $rand, $cache, $before, $after) {
+	public function init() {
+		$wud = wp_upload_dir();
+		define('DTHUMBS_CACHE_DIR', $wud['basedir'].'/deviant-thumbs');
+
+		if ( !is_dir(DTHUMBS_CACHE_DIR) )
+			@mkdir(DTHUMBS_CACHE_DIR);
+
+		$inc = dirname(__FILE__) . '/inc';
+
+		if ( DTHUMBS_INLINE )
+			include_once "$inc/inline.php";
+
+		if ( DTHUMBS_CAROUSEL )
+			include_once "$inc/carousel/carousel.php";
+
+		if ( DTHUMBS_WIDGET )
+			include_once "$inc/widget.php";
+
+		register_deactivation_hook(__FILE__, create_function('', 'deviantThumbs::clear_cache();'));
+	}
+
+	public function generate($query, $count, $rand, $cache, $before, $after) {
 		$cache *= 3600;
 
 		$file = DTHUMBS_CACHE_DIR . '/' . urlencode($query) . '.txt';
@@ -48,6 +67,20 @@ abstract class deviantThumbs {
 			$output .= $before . $thumbs[$i] . $after . "\n";
 
 		return $output;
+	}
+
+	public function clear_cache() {
+		if ( !is_dir(DTHUMBS_CACHE_DIR) )
+			return;
+
+		$dir_handle = opendir(DTHUMBS_CACHE_DIR);
+
+		while ( $file = readdir($dir_handle) )
+			if ( $file != "." && $file != ".." )
+				unlink(DTHUMBS_CACHE_DIR."/".$file);
+
+		closedir($dir_handle);
+		@rmdir(DTHUMBS_CACHE_DIR);
 	}
 
 	private function get_from_pipe($query, $count, $file) {
@@ -69,46 +102,11 @@ abstract class deviantThumbs {
 	}
 }
 
+// Init
+deviantThumbs::init();
+
 // Template tag
 function deviant_thumbs($query, $count = 3, $rand = FALSE, $cache = 6, $before = '<li>', $after = '</li>') {
 	echo deviantThumbs::generate($query, $count, $rand, $cache, $before, $after);
 }
-
-// Init
-function deviant_thumbs_init() {
-	if ( !is_dir(DTHUMBS_CACHE_DIR) )
-		@mkdir(DTHUMBS_CACHE_DIR);
-
-	$inc = dirname(__FILE__) . '/inc';
-
-	if ( DTHUMBS_INLINE )
-		include_once "$inc/inline.php";
-
-	if ( DTHUMBS_CAROUSEL )
-		include_once "$inc/carousel/carousel.php";
-
-	if ( DTHUMBS_WIDGET ) {
-		include_once "$inc/widget.php";
-		$widget = new deviantThumbsWidget();
-		register_activation_hook(__FILE__, array(&$widget, 'install'));
-	}
-
-	register_deactivation_hook(__FILE__, 'deviant_thumbs_clear_cache');
-}
-
-function deviant_thumbs_clear_cache() {
-	if ( !is_dir(DTHUMBS_CACHE_DIR) )
-		return;
-
-	$dir_handle = opendir(DTHUMBS_CACHE_DIR);
-
-	while ( $file = readdir($dir_handle) )
-		if ( $file != "." && $file != ".." )
-			unlink(DTHUMBS_CACHE_DIR."/".$file);
-
-	closedir($dir_handle);
-	@rmdir(DTHUMBS_CACHE_DIR);
-}
-
-deviant_thumbs_init();
 

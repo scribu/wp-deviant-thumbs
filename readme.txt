@@ -4,7 +4,7 @@ Donate link: http://scribu.net/projects
 Tags: deviantart, thumbs, images
 Requires at least: 2.0
 Tested up to: 2.6+
-Stable tag: trunk
+Stable tag: 1.6.1
 
 Display deviantART thumbnails on your blog.
 
@@ -79,4 +79,4 @@ You can edit 'deviant-thumbs/inc/carousel/carousel.css/'.
 
 = Why isn't the cache working? =
 
-Probably because the plugin can't create the folder 'deviant-thumbs/cache'. You can try to create the folder manually and set it's permissions to 757. See [Changing File Permissions](http://codex.wordpress.org/Changing_File_Permissions).
+Probably because your wp-uploads folder isn't writable. You will have to chmod it to 757. If you don't know how, read [Changing File Permissions](http://codex.wordpress.org/Changing_File_Permissions).
