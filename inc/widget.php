@@ -5,7 +5,7 @@ abstract class deviantThumbsWidget {
 			'title' => 'Deviant Thumbs',
 			'query' => 'by:',
 			'count' => 3,
-			'carousel' => DTHUMBS_CAROUSEL,
+			'carousel' => 1,
 			'rand' => 0,
 			'cache' => 6
 		);
@@ -63,7 +63,7 @@ abstract class deviantThumbsWidget {
 		<input name="deviant_thumbs-rand" type="checkbox" <?php if ($rand) echo 'checked="checked"'; ?> value="1">
 	</p>
 
-	<?php if ( DTHUMBS_CAROUSEL ) { ?>
+	<?php if ( class_exists('deviantThumbsCarousel') ) { ?>
 	<p><label for="deviant_thumbs-carousel">Show as a carousel:</label>
 		<input name="deviant_thumbs-carousel" type="checkbox" <?php if ($carousel) echo 'checked="checked"'; ?> value="1">
 	</p>

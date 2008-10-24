@@ -23,7 +23,7 @@ abstract class deviantThumbsCarousel extends deviantThumbs {
 		if ( defined(DTHUMBS_CAROUSEL_SCRIPTS) )
 			return;
 
-		$carousel_url = self::get_plugin_url();
+		$carousel_url = self::get_plugin_url() . '/carousel';
 
 		$script_code = "\n" . '<script language="javascript" type="text/javascript" src="' . $carousel_url . '/include.js"></script>';
 		$script_code .= "\n" . '<script language="javascript" type="text/javascript">' . "\n";

@@ -23,45 +23,41 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-define('DTHUMBS_INLINE', TRUE);		// Set to FALSE if you don't want to use inline thumbs.
-define('DTHUMBS_CAROUSEL', TRUE);	// Set to FALSE if you don't want to use the carousel at all.
-define('DTHUMBS_WIDGET', TRUE);		// Set to FALSE if you don't want to use the widget.
-
 abstract class deviantThumbs {
 	public function init() {
+		// Set cache dir
 		$wud = wp_upload_dir();
 		define('DTHUMBS_CACHE_DIR', $wud['basedir'].'/deviant-thumbs');
 
 		if ( !is_dir(DTHUMBS_CACHE_DIR) )
 			@mkdir(DTHUMBS_CACHE_DIR);
 
-		$inc = dirname(__FILE__) . '/inc';
+		// Include appropriate files
+		$files = array('carousel', 'widget', 'inline');
 
-		if ( DTHUMBS_INLINE )
-			include_once "$inc/inline.php";
+		foreach ( $files as $file )
+			include_once dirname(__FILE__) . "/inc/$file.php";
 
-		if ( DTHUMBS_CAROUSEL )
-			include_once "$inc/carousel/carousel.php";
-
-		if ( DTHUMBS_WIDGET )
-			include_once "$inc/widget.php";
-
-		register_deactivation_hook(__FILE__, create_function('', 'deviantThumbs::clear_cache();'));
+		register_deactivation_hook(__FILE__, array('deviantThumbs', 'clear_cache'));
 	}
 
 	public function generate($query, $count, $rand, $cache, $before, $after) {
 		$cache *= 3600;
 
+		// Set cache file path
 		$file = DTHUMBS_CACHE_DIR . '/' . urlencode($query) . '.txt';
 
+		// Get thumbs
 		if ( file_exists($file) && (time()-filemtime($file) <= $cache) )
 			$thumbs = explode("\n", file_get_contents($file));
 		else
 			$thumbs = self::get_from_pipe($query, $count, $file);
 
+		// Randomize thumbs
 		if ( $rand )
 			shuffle($thumbs);
 
+		// Wrap thumbs
 		$thumbs_nr = count($thumbs);
 		for ( $i=0; $i<$count && $i<$thumbs_nr; $i++ )
 			$output .= $before . $thumbs[$i] . $after . "\n";
@@ -84,18 +80,17 @@ abstract class deviantThumbs {
 	}
 
 	private function get_from_pipe($query, $count, $file) {
-		$pipeurl = 'http://pipes.yahoo.com/pipes/pipe.run?_id=627f77f83f199773c5ce8a150a1e5977&_render=php';
+		$pipeurl  = 'http://pipes.yahoo.com/pipes/pipe.run?_id=627f77f83f199773c5ce8a150a1e5977&_render=php';
 		$pipeurl .= '&query=' . urlencode($query);
 
 		$data = unserialize(file_get_contents($pipeurl));
 
 		// Extract thumb list
 		$thumbs_nr = count($data['value']['items']);
-		for ($i=0; $i<$thumbs_nr; $i++) {
-			$tmp = $data['value']['items'][$i]['content'];
-			$thumbs[] = str_replace(' rel="nofollow" target="_blank"', '', $tmp);
-		}
+		for ( $i=0; $i<$thumbs_nr; $i++ )
+			$thumbs[] = str_replace(' rel="nofollow" target="_blank"', '', $data['value']['items'][$i]['content']);
 
+		// Put thumbs in cache
 		file_put_contents($file, implode("\n", $thumbs));
 
 		return $thumbs;
