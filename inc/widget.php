@@ -1,5 +1,5 @@
 <?php
-class deviantThumbsWidget extends deviantThumbs {
+abstract class deviantThumbsWidget {
 	public function install() {
 		$options = array(
 			'title' => 'Deviant Thumbs',
@@ -12,31 +12,31 @@ class deviantThumbsWidget extends deviantThumbs {
 
 		add_option('deviant thumbs', $options);
 	}
-	
+
 	public function init() {
 		if ( !function_exists('register_sidebar_widget') )
 			return;
 
-		register_sidebar_widget('Deviant Thumbs', array(&$this, 'display'));
-		register_widget_control('Deviant Thumbs', array(&$this, 'control'), 250, 200);
+		register_sidebar_widget('Deviant Thumbs', array('deviantThumbsWidget', 'display'));
+		register_widget_control('Deviant Thumbs', array('deviantThumbsWidget', 'control'), 250, 200);
 	}
 
 	public function display($args) {
+		// Get variables
 		extract($args);
 		extract(get_option('deviant thumbs'));
 
-		echo $before_widget;
-		echo $before_title . $title . $after_title;
-
+		// Generate content
 		if ( $carousel && class_exists('deviantThumbsCarousel') )
-			echo deviantThumbsCarousel::carousel($query, $count, $rand, $cache);
+			$content .= deviantThumbsCarousel::carousel($query, $count, $rand, $cache);
 		else {
-			echo '<ul id="deviant-thumbs">';
-			echo parent::generate($query, $count, $rand, $cache, '<li>', '</li>');
-			echo '</ul>';
+			$content .= '<ul id="deviant-thumbs">';
+			$content .= deviantThumbs::generate($query, $count, $rand, $cache, '<li>', '</li>');
+			$content .= '</ul>';
 		}
 
-		echo $after_widget;
+		// Wrap it up
+		echo $before_widget . $before_title . $title . $after_title . $content . $after_widget;
 	}
 
 	public function control() {
@@ -96,7 +96,6 @@ class deviantThumbsWidget extends deviantThumbs {
 }
 
 // Init
-$deviantThumbsWidget = new deviantThumbsWidget(); 
-register_activation_hook(__FILE__, array(&$deviantThumbsWidget, 'install'));
-add_action('plugins_loaded', array(&$deviantThumbsWidget, 'init'));
+register_activation_hook(__FILE__, array('deviantThumbsWidget', 'install'));
+add_action('plugins_loaded', array('deviantThumbsWidget', 'init'));
 
