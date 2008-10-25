@@ -24,7 +24,7 @@ abstract class deviantThumbsCarousel extends deviantThumbs {
 	<ul>
 <?php echo parent::generate($query, compact('count', 'rand', 'cache', 'before', 'after')); ?>
 	</ul>
-<div>
+</div>
 <script language="javascript" type="text/javascript">
 <?php echo "$(document).ready(function(){new simpleCarousel('#{$id}', {$show}, '{$speed}')});" ?>
 </script>
