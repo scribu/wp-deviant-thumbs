@@ -28,10 +28,10 @@ abstract class deviantThumbsWidget {
 
 		// Generate content
 		if ( $carousel && class_exists('deviantThumbsCarousel') )
-			$content .= deviantThumbsCarousel::carousel($query);
+			$content .= deviantThumbsCarousel::carousel($query, compact('count', 'rand', 'cache'));
 		else {
 			$content .= '<ul id="deviant-thumbs">';
-			$content .= deviantThumbs::generate($query, $count, $rand, $cache, '<li>', '</li>');
+			$content .= deviantThumbs::generate($query, compact('count', 'rand', 'cache'));
 			$content .= '</ul>';
 		}
 

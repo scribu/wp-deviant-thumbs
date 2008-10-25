@@ -10,8 +10,10 @@ abstract class deviantThumbsCarousel extends deviantThumbs {
 			'cache' => 6
 		);
 
-		$r = wp_parse_args($args, $defaults);
-		extract( $r, EXTR_SKIP );
+		extract(wp_parse_args($args, $defaults), EXTR_SKIP);
+
+		$before = "\t\t<li>";
+		$after = "</li>";
 
 		ob_start();
 		self::maybe_add_scripts();
@@ -20,7 +22,7 @@ abstract class deviantThumbsCarousel extends deviantThumbs {
 	<i class="down">&nbsp;</i>
 	<i class="up">&nbsp;</i>
 	<ul>
-<?php echo parent::generate($query, $count, $rand, $cache, "\t\t<li>", "</li>"); ?>
+<?php echo parent::generate($query, compact('count', 'rand', 'cache', 'before', 'after')); ?>
 	</ul>
 <div>
 <script language="javascript" type="text/javascript">
@@ -31,12 +33,12 @@ abstract class deviantThumbsCarousel extends deviantThumbs {
 	}
 
 	private function maybe_add_scripts() {
-		global $wp_scripts, $da_scripts;
+		global $wp_scripts, $dt_scripts;
 
-		if ( $da_scripts )
+		if ( $dt_scripts )
 			return;
 
-		$da_scripts = true;
+		$dt_scripts = true;
 
 		$carousel_url = self::get_plugin_url() . '/carousel';
 ?>

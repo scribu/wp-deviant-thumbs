@@ -5,7 +5,7 @@
 
 /* DeviantArt v6 skin */
 .simple-carousel {
-	width: 114px;
+	width: 120px;
 	position: relative;
 	padding: 38px 10px;
 	background: #4D625D;
@@ -13,14 +13,14 @@
 	-moz-border-radius: 10px;
 }
 .simple-carousel ul {
-	height: 250px;
+	height: 300px;
 }
 .simple-carousel li img {
 	display: block;
 	margin: 0 auto;
 	border: 0;
-	max-width: 114px;
-	width: expression( if(this.clientWidth > 114) this.width=114 ) /* IE6 fix */
+	max-width: 120px;
+	width: expression( if(this.clientWidth > 120) this.width=120 ) /* IE6 fix */
 }
 
 /* Buttons */

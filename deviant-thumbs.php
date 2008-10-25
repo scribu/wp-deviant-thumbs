@@ -1,7 +1,7 @@
 <?php
 /*
 Plugin Name: Deviant Thumbs
-Version: 1.7b
+Version: 1.7
 Description: Display clickable deviation thumbs from deviantART.
 Author: scribu
 Author URI: http://scribu.net/
@@ -32,7 +32,7 @@ abstract class deviantThumbs {
 		if ( !is_dir(DTHUMBS_CACHE_DIR) )
 			@mkdir(DTHUMBS_CACHE_DIR);
 
-		// Include appropriate files
+		// Include additional files
 		$files = array('carousel', 'widget', 'inline');
 
 		foreach ( $files as $file )
@@ -41,7 +41,17 @@ abstract class deviantThumbs {
 		register_deactivation_hook(__FILE__, array('deviantThumbs', 'clear_cache'));
 	}
 
-	public function generate($query, $count, $rand, $cache, $before, $after) {
+	public function generate($query, $args = '') {
+		$defaults = array(
+			'count' => 6,
+			'rand'  => true,
+			'before' => '<li>',
+			'after' => '</li>',
+			'cache' => 6
+		);
+
+		extract(wp_parse_args($args, $defaults), EXTR_SKIP);
+
 		$cache *= 3600;
 
 		// Set cache file path
@@ -101,7 +111,7 @@ abstract class deviantThumbs {
 deviantThumbs::init();
 
 // Template tag
-function deviant_thumbs($query, $count = 3, $rand = FALSE, $cache = 6, $before = '<li>', $after = '</li>') {
-	echo deviantThumbs::generate($query, $count, $rand, $cache, $before, $after);
+function deviant_thumbs($query, $args = '') {
+	echo deviantThumbs::generate($query, $args);
 }
 
