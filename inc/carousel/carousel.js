@@ -1,36 +1,41 @@
-function slideCarousel(id, i, j, s) {
-	$(id+" li:eq("+i+")").slideToggle(s);
-	$(id+" li:eq("+j+")").slideToggle(s);
-}
 function simpleCarousel(id, nr, s) {
-	n = $(id+" li").length;
+	var e = this;	// gotta love lexical closures
 
-	if (n<2) return;
+	e.n = $(id+" li").length;
+	e.id = id;
+	e.nr = nr;
+	e.s = s;
+
+	if (e.n<1) return;
 
 	$(id).addClass('simple-carousel');
 
-	i = 0;		// index
-	l = 0;		// flag: last action
+	e.i = 0;		// index
+	e.l = 0;		// flag: last action
 
 	$(id+" li:gt("+(nr-1)+")").hide('slow');
 
-	$(id+" .down").click(function(){
-		if (l==-1) i++;
-		l = 1;
+	$(id+" .down").click(function() {
+		if (e.l==-1)
+			e.i++;
+		e.l = 1;
 
-		if (i+nr<n) {
-			slideCarousel(id, i, i+nr, s);
-			i++;
+		if (e.i+e.nr < e.n) {
+			$(e.id+" li:eq("+e.i+")").slideToggle(e.s);
+			$(e.id+" li:eq("+(e.i+e.nr)+")").slideToggle(e.s);
+			e.i++;
 		}
-	})
+	});
 
-	$(id+" .up").click(function(){
-		if (l==1) i--;
-		l = -1;
+	$(id+" .up").click(function() {
+		if (e.l==1)
+			e.i--;
+		e.l = -1;
 
-		if (i>=0) {
-			slideCarousel(id, i, i+nr, s);
-			i--;
+		if (e.i>=0) {
+			$(e.id+" li:eq("+e.i+")").slideToggle(e.s);
+			$(e.id+" li:eq("+(e.i+e.nr)+")").slideToggle(e.s);
+			e.i--;
 		}
-	})
+	});
 }
