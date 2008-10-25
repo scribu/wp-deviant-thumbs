@@ -1,17 +1,18 @@
 <?php
 abstract class deviantThumbsCarousel extends deviantThumbs {
-	public function carousel($query, $count, $rand, $cache) {
+	public function carousel($query, $count, $rand, $cache, $id = 'da-carousel') {
 		ob_start();
 		echo self::maybe_add_scripts();
 ?>
-<div id="deviant-thumbs-carousel">
-	<div id="dt-prev">&nbsp;</div>
-	<div id="dt-next">&nbsp;</div>
-	<div id="dt-carousel-vertical">
-		<ul>
+<script language="javascript" type="text/javascript">
+$(document).ready(function(){simpleCarousel('#<?php echo $id ?>', 3, 'fast')});
+</script>
+<div id="<?php echo $id ?>">
+	<div class="up">&nbsp;</div>
+	<div class="down">&nbsp;</div>
+	<ul>
 <?php echo parent::generate($query, $count, $rand, $cache, "\t\t\t<li>", "</li>"); ?>
-		</ul>
-	<div>
+	</ul>
 <div>
 <?php
 		return ob_get_clean();
@@ -28,14 +29,12 @@ abstract class deviantThumbsCarousel extends deviantThumbs {
 		$script_code = "\n" . '<script language="javascript" type="text/javascript" src="' . $carousel_url . '/include.js"></script>';
 		$script_code .= "\n" . '<script language="javascript" type="text/javascript">' . "\n";
 
+		$script_code .= "include_css('{$carousel_url}/carousel.css');\n";
 		if ( !isset($wp_scripts) || !in_array('jquery', $wp_scripts->done) )	// Check if jQuery is already loaded
-		#	$script_code .= "include_js('http://code.jquery.com/jquery-latest.pack.js');\n";
 		#	$script_code .= "include_js('" . get_option('siteurl') . "/wp-includes/js/jquery/jquery.js');\n";
 			$script_code .= "include_js('{$carousel_url}/jquery.js');\n";
 
 		$script_code .= "include_js('{$carousel_url}/carousel.js');\n";
-		$script_code .= "include_css('{$carousel_url}/carousel.css');\n";
-
 		$script_code .= "</script>\n";
 
 		define('DTHUMBS_CAROUSEL_SCRIPTS', TRUE);

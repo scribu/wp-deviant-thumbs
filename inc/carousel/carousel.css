@@ -1,21 +1,30 @@
-/* DeviantArt v6 skin */
+/* Setup */
+.simple-carousel ul {overflow: hidden; margin: 0 !important; padding: 0 !important}
+.simple-carousel li {margin: 0 0 10px !important; padding: 0 !important}
+.simple-carousel li:before, .simple-carousel li:after {content: "" !important}
 
-#deviant-thumbs-carousel {
+/* DeviantArt v6 skin */
+.simple-carousel {
 	width: 113px;
-	padding: 38px 10px;
 	position: relative;
-	-moz-border-radius: 10px;
+	padding: 38px 10px;
 	background: #4D625D;
 	border: 1px solid #BECAC6;
+	-moz-border-radius: 10px;
 }
-#deviant-thumbs-carousel li:before, .carousel-container li:after {content: "" !important}
-#deviant-thumbs-carousel li {width: 113px !important; height: auto !important; text-align:center; margin: 0 0 10px !important; padding: 0 !important}
-#deviant-thumbs-carousel li img {border: 0; max-width: 113px; width: expression( if(this.clientWidth > 113) this.width=113 )}
+.simple-carousel ul {
+	height: 250px;
+}
+.simple-carousel li img {
+	display: block;
+	margin: 0 auto;
+	border: 0;
+	max-width: 113px;
+	width: expression( if(this.clientWidth > 113) this.width=113 ) /* IE6 fix */
+}
 
 /* Buttons */
-
-#deviant-thumbs-carousel #dt-prev,
-#deviant-thumbs-carousel #dt-next {
+.simple-carousel .up, .simple-carousel .down {
 	background: transparent url('carousel.gif') no-repeat;
 	width: 18px;
 	height: 18px;
@@ -24,14 +33,12 @@
 	cursor: pointer;
 }
 
-#deviant-thumbs-carousel #dt-prev {top: 10px; background-position: -18px 0}
-#deviant-thumbs-carousel #dt-next {bottom: 10px; background-position: 0 0}
+.simple-carousel .up {top: 10px; background-position: -18px 0}
+.simple-carousel .down {bottom: 10px; background-position: 0 0}
 
-#deviant-thumbs-carousel #dt-prev:hover,
-#deviant-thumbs-carousel #dt-prev:active {
+.simple-carousel .up:hover, .simple-carousel .up:active {
 	background-position: -18px -18px;
 }
-#deviant-thumbs-carousel #dt-next:hover,
-#deviant-thumbs-carousel #dt-next:active {
+.simple-carousel .down:hover, .simple-carousel .down:active {
 	background-position: 0 -18px;
 }
