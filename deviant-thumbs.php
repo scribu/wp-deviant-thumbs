@@ -1,7 +1,7 @@
 <?php
 /*
 Plugin Name: Deviant Thumbs
-Version: 1.7.1
+Version: 1.7.2
 Description: Display clickable deviation thumbs from deviantART.
 Author: scribu
 Author URI: http://scribu.net/
@@ -90,6 +90,9 @@ abstract class deviantThumbs {
 	}
 
 	private function get_from_pipe($query, $count, $file) {
+		if ( FALSE === strpos($query, 'sort:time') && FALSE === strpos($query, 'boost:popular') )
+		echo	$query = 'sort:time ' . $query;
+
 		$pipeurl  = 'http://pipes.yahoo.com/pipes/pipe.run?_id=627f77f83f199773c5ce8a150a1e5977&_render=php';
 		$pipeurl .= '&query=' . urlencode($query);
 
