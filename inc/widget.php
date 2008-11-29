@@ -1,5 +1,5 @@
 <?php
-abstract class deviantThumbsWidget {
+class deviantThumbsWidget {
 	public function install() {
 		$options = array(
 			'title' => 'Deviant Thumbs',

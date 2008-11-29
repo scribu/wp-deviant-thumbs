@@ -1,35 +1,33 @@
 <?php
-abstract class deviantThumbsCarousel extends deviantThumbs {
+class deviantThumbsCarousel extends deviantThumbs {
 	public function carousel($query, $args = '') {
-		$defaults = array(
+		extract(wp_parse_args($args, array(
 			'id' => 'da-carousel',
 			'count' => 6,
 			'show' => 3,
 			'rand'  => true,
 			'speed' => 'fast',
 			'cache' => 6
-		);
-
-		extract(wp_parse_args($args, $defaults), EXTR_SKIP);
+		)), EXTR_SKIP);
 
 		$before = "\t\t<li>";
 		$after = "</li>";
 
-		ob_start();
-		self::maybe_add_scripts();
-?>
-<div id="<?php echo $id ?>">
+		$thumbs = parent::generate($query, compact('count', 'rand', 'cache', 'before', 'after'));
+
+		$output = self::maybe_add_scripts();
+		$output .= sprintf('
+<div id="%1$s">
 	<i class="down">&nbsp;</i>
 	<i class="up">&nbsp;</i>
 	<ul>
-<?php echo parent::generate($query, compact('count', 'rand', 'cache', 'before', 'after')); ?>
+%2$s
 	</ul>
 </div>
 <script language="javascript" type="text/javascript">
-<?php echo "$(document).ready(function(){new simpleCarousel('#{$id}', {$show}, '{$speed}')});" ?>
-</script>
-<?php
-		return ob_get_clean();
+$(document).ready(function(){new simpleCarousel("#%1$s", "%3$s", "%4$s")});
+</script>', $id, $thumbs, $show, $speed);
+		return $output;
 	}
 
 	private function maybe_add_scripts() {
@@ -41,16 +39,18 @@ abstract class deviantThumbsCarousel extends deviantThumbs {
 		$dt_scripts = true;
 
 		$carousel_url = self::get_plugin_url() . '/carousel';
+		ob_start();
 ?>
 <script language="javascript" type="text/javascript" src="<?php echo $carousel_url ?>/include.js"></script>
 <script language="javascript" type="text/javascript">
-<?php	if ( !@in_array('jquery', $wp_scripts->done) ) {	?>
+<?php if ( !@in_array('jquery', $wp_scripts->done) ) { ?>
 include_js('<?php echo $carousel_url ?>/jquery.js');
-<?php	} ?>
+<?php } ?>
 include_js('<?php echo $carousel_url ?>/carousel.js');
 include_css('<?php echo $carousel_url ?>/carousel.css');
 </script>
 <?php
+		return ob_get_clean();
 	}
 
 	private function get_plugin_url() {

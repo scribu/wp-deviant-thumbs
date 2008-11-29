@@ -1,7 +1,7 @@
 <?php
 /*
 Plugin Name: Deviant Thumbs
-Version: 1.7.2
+Version: 1.7.3
 Description: Display clickable deviation thumbs from deviantART.
 Author: scribu
 Author URI: http://scribu.net/
@@ -23,7 +23,7 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-abstract class deviantThumbs {
+class deviantThumbs {
 	public function init() {
 		// Set cache dir
 		$wud = wp_upload_dir();
@@ -42,15 +42,13 @@ abstract class deviantThumbs {
 	}
 
 	public function generate($query, $args = '') {
-		$defaults = array(
+		extract(wp_parse_args($args, array(
 			'count' => 6,
 			'rand'  => true,
 			'before' => '<li>',
 			'after' => '</li>',
 			'cache' => 6
-		);
-
-		extract(wp_parse_args($args, $defaults), EXTR_SKIP);
+		)), EXTR_SKIP);
 
 		$cache *= 3600;
 
@@ -76,10 +74,10 @@ abstract class deviantThumbs {
 	}
 
 	public function clear_cache() {
-		if ( !is_dir(DTHUMBS_CACHE_DIR) )
-			return;
+		$dir_handle = @opendir(DTHUMBS_CACHE_DIR);
 
-		$dir_handle = opendir(DTHUMBS_CACHE_DIR);
+		if ( FALSE == $dir_handle )
+			return;
 
 		while ( $file = readdir($dir_handle) )
 			if ( $file != "." && $file != ".." )
@@ -91,7 +89,7 @@ abstract class deviantThumbs {
 
 	private function get_from_pipe($query, $count, $file) {
 		if ( FALSE === strpos($query, 'sort:time') && FALSE === strpos($query, 'boost:popular') )
-		echo	$query = 'sort:time ' . $query;
+			$query = 'sort:time ' . $query;
 
 		$pipeurl  = 'http://pipes.yahoo.com/pipes/pipe.run?_id=627f77f83f199773c5ce8a150a1e5977&_render=php';
 		$pipeurl .= '&query=' . urlencode($query);
