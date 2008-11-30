@@ -29,7 +29,7 @@
 	width: 18px;
 	height: 18px;
 	position: absolute;
-	left: 56px;
+	left: 60px;		/* 120/2 */
 	cursor: pointer;
 }
 
