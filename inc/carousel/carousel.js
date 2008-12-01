@@ -1,41 +1,39 @@
-function simpleCarousel(id, nr, s) {
-	var e = this;	// gotta love lexical closures
+function simpleCarousel(id, nr, speed) {
+	var e = this;
 
-	e.id = id;
-	e.nr = nr;
-	e.s = s;
+	e.s = speed;
+	e.nr = parseInt(nr);
+	e.c = $(id);						// container
+	e.n = $(e.c).find('li').length;		// number of elements
 
-	e.n = $(e.id+" > ul > li").length;
-	if (e.n<1) return;
+	$(e.c).addClass('simple-carousel');
+	$(e.c).prepend('<i class="up">&nbsp;</i>');
+	$(e.c).append('<i class="down">&nbsp;</i>');
 
-	$(e.id).addClass('simple-carousel');
+	if ( e.n <= e.nr ) return;
 
-	e.i = 0;		// index
-	e.l = 0;		// flag: last action
+	$(e.c).find('li:gt('+(nr-1)+')').hide();	// show only the first {nr} elements
 
-	$(e.id+" > ul > li:gt("+(nr-1)+")").hide('slow');
+	e.i = 0;	// index
+	e.l = 0;	// last action
 
-	$(e.id+" > .down").click(function() {
-		if (e.l==-1)
-			e.i++;
-		e.l = 1;
+	var move = function(d) {
+		if ( e.l == -d )
+			e.i = e.i + d;
+		e.l = d;
 
-		if (e.i+e.nr < e.n) {
-			$(e.id+" > ul > li:eq("+e.i+")").slideToggle(e.s);
-			$(e.id+" > ul > li:eq("+(e.i+e.nr)+")").slideToggle(e.s);
-			e.i++;
+		if ( (d<0 && e.i >= 0) || (d>0 && e.i + e.nr < e.n) ) {
+			$(e.c).find("li:eq(" + e.i + ")").slideToggle(e.s);
+			$(e.c).find("li:eq(" + (e.i+e.nr) + ")").slideToggle(e.s);
+			e.i = e.i + d;
 		}
+	}
+
+	$(e.c).find('.down').click(function() {
+		move(1);
 	});
 
-	$(e.id+" > .up").click(function() {
-		if (e.l==1)
-			e.i--;
-		e.l = -1;
-
-		if (e.i>=0) {
-			$(e.id+" > ul > li:eq("+e.i+")").slideToggle(e.s);
-			$(e.id+" > ul > li:eq("+(e.i+e.nr)+")").slideToggle(e.s);
-			e.i--;
-		}
+	$(e.c).find('.up').click(function() {
+		move(-1);
 	});
 }

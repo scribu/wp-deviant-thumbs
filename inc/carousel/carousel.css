@@ -6,8 +6,7 @@
 /* DeviantArt v6 skin */
 .simple-carousel {
 	width: 120px;
-	position: relative;
-	padding: 38px 10px;
+	padding: 0 10px;
 	background: #4D625D;
 	border: 1px solid #BECAC6;
 	-moz-border-radius: 10px;
@@ -28,13 +27,13 @@
 	background: transparent url('carousel.gif') no-repeat;
 	width: 18px;
 	height: 18px;
-	position: absolute;
-	left: 60px;		/* 120/2 */
+	display: block;
+	margin: 10px auto;
 	cursor: pointer;
 }
 
-.simple-carousel .up {top: 10px; background-position: -18px 0}
-.simple-carousel .down {bottom: 10px; background-position: 0 0}
+.simple-carousel .up {background-position: -18px 0}
+.simple-carousel .down {background-position: 0 0}
 
 .simple-carousel .up:hover, .simple-carousel .up:active {
 	background-position: -18px -18px;

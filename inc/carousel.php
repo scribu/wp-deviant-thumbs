@@ -17,16 +17,16 @@ class deviantThumbsCarousel extends deviantThumbs {
 
 		$output = self::maybe_add_scripts();
 		$output .= sprintf('
-<div id="%1$s">
-	<i class="down">&nbsp;</i>
-	<i class="up">&nbsp;</i>
+<div id="%2$s">
 	<ul>
-%2$s
+%1$s
 	</ul>
 </div>
 <script language="javascript" type="text/javascript">
-$(document).ready(function(){new simpleCarousel("#%1$s", "%3$s", "%4$s")});
-</script>', $id, $thumbs, $show, $speed);
+$(document).ready(function(){
+	new simpleCarousel("#%2$s", %3$d, "%4$s")
+});
+</script>', $thumbs, $id, $show, $speed);
 		return $output;
 	}
 
