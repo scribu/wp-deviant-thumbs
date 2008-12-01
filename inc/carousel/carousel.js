@@ -4,7 +4,8 @@ function simpleCarousel(id, nr, speed) {
 	e.s = speed;
 	e.nr = parseInt(nr);
 	e.c = $(id);						// container
-	e.n = $(e.c).find('li').length;		// number of elements
+	e.li = $(e.c).find('li');			// elements
+	e.n = e.li.length;		// number of elements
 
 	$(e.c).addClass('simple-carousel');
 	$(e.c).prepend('<i class="up">&nbsp;</i>');
@@ -23,8 +24,8 @@ function simpleCarousel(id, nr, speed) {
 		e.l = d;
 
 		if ( (d<0 && e.i >= 0) || (d>0 && e.i + e.nr < e.n) ) {
-			$(e.c).find("li:eq(" + e.i + ")").slideToggle(e.s);
-			$(e.c).find("li:eq(" + (e.i+e.nr) + ")").slideToggle(e.s);
+			$(e.li[e.i]).slideToggle(e.s);
+			$(e.li[e.i+e.nr]).slideToggle(e.s);
 			e.i = e.i + d;
 		}
 	}

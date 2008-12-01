@@ -4,7 +4,8 @@ Donate link: http://scribu.net/projects
 Tags: deviantart, thumbs, images
 Requires at least: 2.2
 Tested up to: 2.7
-Stable tag: trunk
+Stable tag: 1.7.4
+
 Display deviantART thumbnails on your blog.
 
 == Description ==
