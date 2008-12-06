@@ -95,7 +95,3 @@ class deviantThumbsWidget {
 	}
 }
 
-// Init
-register_activation_hook(__FILE__, array('deviantThumbsWidget', 'install'));
-add_action('plugins_loaded', array('deviantThumbsWidget', 'init'));
-

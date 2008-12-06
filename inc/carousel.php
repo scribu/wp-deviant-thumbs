@@ -23,7 +23,7 @@ class deviantThumbsCarousel extends deviantThumbs {
 	</ul>
 </div>
 <script language="javascript" type="text/javascript">
-$(document).ready(function(){
+$(window).bind("load", function (){
 	new simpleCarousel("#%2$s", %3$d, "%4$s")
 });
 </script>', $thumbs, $id, $show, $speed);

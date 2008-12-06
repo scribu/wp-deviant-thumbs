@@ -11,9 +11,11 @@
 	border: 1px solid #BECAC6;
 	-moz-border-radius: 10px;
 }
-.simple-carousel ul {
-	height: 300px;
-}
+
+/* Add this line for a fixed height carousel:
+.simple-carousel ul {height: 300px}
+*/
+
 .simple-carousel li img {
 	display: block;
 	margin: 0 auto;
@@ -33,7 +35,8 @@
 }
 
 .simple-carousel .up {background-position: -18px 0}
-.simple-carousel .down {background-position: 0 0}
+.simple-carousel .down {background-position: 0 0; margin-top:0}
+.simple-carousel .disabled {visibility:hidden}
 
 .simple-carousel .up:hover, .simple-carousel .up:active {
 	background-position: -18px -18px;
