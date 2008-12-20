@@ -1,7 +1,7 @@
 <?php
 /*
 Plugin Name: Deviant Thumbs
-Version: 1.7.5
+Version: 1.7.6a
 Description: Display clickable deviation thumbs from deviantART.
 Author: scribu
 Author URI: http://scribu.net/
@@ -24,7 +24,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
 class deviantThumbs {
-	public function init() {
+	public function __construct() {
 		// Set cache dir
 		$wud = wp_upload_dir();
 		define('DTHUMBS_CACHE_DIR', $wud['basedir'].'/deviant-thumbs');
@@ -32,47 +32,7 @@ class deviantThumbs {
 		if ( !is_dir(DTHUMBS_CACHE_DIR) )
 			@mkdir(DTHUMBS_CACHE_DIR);
 
-		// Include additional files
-		$files = array('carousel', 'widget', 'inline');
-
-		foreach ( $files as $file )
-			include_once dirname(__FILE__) . "/inc/$file.php";
-
-		register_activation_hook(__FILE__, array('deviantThumbsWidget', 'install'));
-		add_action('plugins_loaded', array('deviantThumbsWidget', 'init'));
-		register_deactivation_hook(__FILE__, array('deviantThumbs', 'clear_cache'));
-	}
-
-	public function generate($query, $args = '') {
-		extract(wp_parse_args($args, array(
-			'count' => 6,
-			'rand'  => true,
-			'before' => '<li>',
-			'after' => '</li>',
-			'cache' => 6
-		)), EXTR_SKIP);
-
-		$cache *= 3600;
-
-		// Set cache file path
-		$file = DTHUMBS_CACHE_DIR . '/' . urlencode($query) . '.txt';
-
-		// Get thumbs
-		if ( file_exists($file) && (time()-filemtime($file) <= $cache) )
-			$thumbs = explode("\n", file_get_contents($file));
-		else
-			$thumbs = self::get_from_pipe($query, $count, $file);
-
-		// Randomize thumbs
-		if ( $rand )
-			shuffle($thumbs);
-
-		// Wrap thumbs
-		$thumbs_nr = count($thumbs);
-		for ( $i=0; $i<$count && $i<$thumbs_nr; $i++ )
-			$output .= $before . $thumbs[$i] . $after . "\n";
-
-		return $output;
+		register_deactivation_hook(__FILE__, array($this, 'clear_cache'));
 	}
 
 	public function clear_cache() {
@@ -87,6 +47,37 @@ class deviantThumbs {
 
 		closedir($dir_handle);
 		@rmdir(DTHUMBS_CACHE_DIR);
+	}
+
+	public function get($query, $args = '') {
+		extract(wp_parse_args($args, array(
+			'count' => 6,
+			'rand'  => true,
+			'before' => '<li>',
+			'after' => '</li>',
+			'cache' => 6
+		)));
+
+		$cache *= 3600;
+
+		// Set cache file path
+		$file = DTHUMBS_CACHE_DIR . '/' . urlencode($query) . '.txt';
+
+		// Get thumbs
+		if ( file_exists($file) && (time()-filemtime($file) <= $cache) )
+			$thumbs = explode("\n", file_get_contents($file));
+		else
+			$thumbs = $this->get_from_pipe($query, $count, $file);
+
+		// Randomize thumbs
+		if ( $rand )
+			shuffle($thumbs);
+
+		// Wrap thumbs
+		for ( $i=0; $i<$count && $i<count($thumbs); $i++ )
+			$output .= $before . $thumbs[$i] . $after . "\n";
+
+		return $output;
 	}
 
 	private function get_from_pipe($query, $count, $file) {
@@ -111,10 +102,14 @@ class deviantThumbs {
 }
 
 // Init
-deviantThumbs::init();
+foreach ( array('carousel', 'widget', 'inline') as $file )
+	include_once dirname(__FILE__) . "/inc/$file.php";
+
+new deviantThumbs();
+new deviantThumbsWidget(__FILE__);
 
 // Template tag
 function deviant_thumbs($query, $args = '') {
-	echo deviantThumbs::generate($query, $args);
+	echo deviantThumbs::get($query, $args);
 }
 

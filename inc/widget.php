@@ -1,37 +1,54 @@
 <?php
 class deviantThumbsWidget {
+	var $options;
+
+	public function __construct($file) {
+		if ( !class_exists('scbOptions') )
+			require_once('scbOptions.php');
+
+		$this->options = new scbOptions('deviant thumbs');
+
+		register_activation_hook($file, array($this, 'install'));
+		register_uninstall_hook($file, array($this, 'uninstall'));
+
+		add_action('plugins_loaded', array($this, 'init'));
+	}
+
 	public function install() {
-		$options = array(
+		$this->options->update(array(
 			'title' => 'Deviant Thumbs',
 			'query' => 'by:',
 			'count' => 3,
 			'carousel' => 1,
 			'rand' => 0,
 			'cache' => 6
-		);
+		), false);
+	}
 
-		add_option('deviant thumbs', $options);
+	public function uninstall() {
+		$this->options->delete();
+		deviantThumbs::clear_cache();
 	}
 
 	public function init() {
 		if ( !function_exists('register_sidebar_widget') )
 			return;
 
-		register_sidebar_widget('Deviant Thumbs', array('deviantThumbsWidget', 'display'));
-		register_widget_control('Deviant Thumbs', array('deviantThumbsWidget', 'control'), 250, 200);
+		register_sidebar_widget('Deviant Thumbs', array($this, 'display'));
+		register_widget_control('Deviant Thumbs', array($this, 'control'), 250, 200);
 	}
 
 	public function display($args) {
 		// Get variables
 		extract($args);
-		extract(get_option('deviant thumbs'));
+		extract($this->options->get());
 
 		// Generate content
 		if ( $carousel && class_exists('deviantThumbsCarousel') )
 			$content .= deviantThumbsCarousel::carousel($query, compact('count', 'rand', 'cache'));
 		else {
 			$content .= '<ul id="deviant-thumbs">';
-			$content .= deviantThumbs::generate($query, compact('count', 'rand', 'cache'));
+			$content .= deviantThumbs::get($query, compact('count', 'rand', 'cache'));
 			$content .= '</ul>';
 		}
 
@@ -40,7 +57,8 @@ class deviantThumbsWidget {
 	}
 
 	public function control() {
-		extract(self::options());
+		$this->form_handler();
+		extract($this->options->get());
 ?>
 	<p><label for="deviant_thumbs-title">Title:</label>
 		<input name="deviant_thumbs-title" type="text" value="<?php echo $title; ?>" style="width: 195px" />
@@ -72,13 +90,11 @@ class deviantThumbsWidget {
 	<input name="deviant_thumbs-submit" type="hidden" value="1" />
 <?php }
 
-	private function options() {
-		$oldoptions = get_option('deviant thumbs');
-
+	private function form_handler() {
 		if ( !$_POST['deviant_thumbs-submit'] )
-			return $oldoptions;
+			return;
 
-		// Set new options
+		// Collect new options
 		$newoptions['title'] = strip_tags(stripslashes($_POST['deviant_thumbs-title']));
 		$newoptions['query'] = strip_tags(stripslashes($_POST['deviant_thumbs-query']));
 		$newoptions['count'] = (int) $_POST['deviant_thumbs-count'];
@@ -86,12 +102,7 @@ class deviantThumbsWidget {
 		$newoptions['rand'] = (bool) $_POST['deviant_thumbs-rand'];
 		$newoptions['cache'] = (int) $_POST['deviant_thumbs-cache'];
 
-		if ( $oldoptions == $newoptions )
-			return $oldoptions;
-
-		update_option('deviant thumbs', $newoptions);
-
-		return $newoptions;
+		$this->options->update($newoptions);
 	}
 }
 

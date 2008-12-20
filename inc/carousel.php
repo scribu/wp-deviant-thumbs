@@ -1,5 +1,5 @@
 <?php
-class deviantThumbsCarousel extends deviantThumbs {
+class deviantThumbsCarousel {
 	public function carousel($query, $args = '') {
 		extract(wp_parse_args($args, array(
 			'id' => 'da-carousel',
@@ -13,7 +13,7 @@ class deviantThumbsCarousel extends deviantThumbs {
 		$before = "\t\t<li>";
 		$after = "</li>";
 
-		$thumbs = parent::generate($query, compact('count', 'rand', 'cache', 'before', 'after'));
+		$thumbs = deviantThumbs::get($query, compact('count', 'rand', 'cache', 'before', 'after'));
 
 		$output = self::maybe_add_scripts();
 		$output .= sprintf('
