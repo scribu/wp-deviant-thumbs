@@ -1,7 +1,7 @@
 <?php
 /*
 Plugin Name: Deviant Thumbs
-Version: 1.7.6b
+Version: 1.7.6
 Description: Display clickable deviation thumbs from deviantART.
 Author: scribu
 Author URI: http://scribu.net/
