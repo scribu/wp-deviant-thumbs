@@ -23,7 +23,7 @@ class deviantThumbsCarousel {
 	</ul>
 </div>
 <script language="javascript" type="text/javascript">
-$(window).bind("load", function (){
+jQuery(window).load(function() {
 	new simpleCarousel("#%2$s", %3$d, "%4$s")
 });
 </script>', $thumbs, $id, $show, $speed);
