@@ -4,7 +4,7 @@ Donate link: http://scribu.net/projects
 Tags: deviantart, thumbs, images
 Requires at least: 2.2
 Tested up to: 2.7
-Stable tag: 1.7.5
+Stable tag: trunk
 
 Display deviantART thumbnails on your blog.
 
@@ -17,8 +17,6 @@ Display linked thumbnails from deviantART on your WordPress blog.
 * **Scrollable carousel**: your thumbs can be displayed in a dA style carousel
 * **Inline deviations**: the code *:thumb98765:* inside a post becomes a thumbnail, just like on dA
 * **Widget support** and **flexible template tags**
-
-Note: PHP5 is required, from version 1.6 onwards.
 
 == Installation ==
 
@@ -77,7 +75,7 @@ These are meant to be used outside The Loop.
 
 = How can I choose which thumbs to display? =
 
-You enter a search string (the thumbs are found using the search engine from dA). Read more about [search options](http://help.deviantart.com/577/) on deviantART.
+You enter a search string (the thumbs are found using the search engine from deviantArt). You can read more about [search options](http://help.deviantart.com/577/) there.
 
 = How can I modifify the carousel skin? =
 

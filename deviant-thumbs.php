@@ -1,7 +1,7 @@
 <?php
 /*
 Plugin Name: Deviant Thumbs
-Version: 1.7.6a
+Version: 1.7.6b
 Description: Display clickable deviation thumbs from deviantART.
 Author: scribu
 Author URI: http://scribu.net/
@@ -25,7 +25,6 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 class deviantThumbs {
 	public function __construct() {
-		// Set cache dir
 		$wud = wp_upload_dir();
 		define('DTHUMBS_CACHE_DIR', $wud['basedir'].'/deviant-thumbs');
 
@@ -67,7 +66,7 @@ class deviantThumbs {
 		if ( file_exists($file) && (time()-filemtime($file) <= $cache) )
 			$thumbs = explode("\n", file_get_contents($file));
 		else
-			$thumbs = $this->get_from_pipe($query, $count, $file);
+			$thumbs = self::get_from_pipe($query, $count, $file);
 
 		// Randomize thumbs
 		if ( $rand )
@@ -103,9 +102,10 @@ class deviantThumbs {
 
 // Init
 foreach ( array('carousel', 'widget', 'inline') as $file )
-	include_once dirname(__FILE__) . "/inc/$file.php";
+	include_once dirname(__FILE__) . "/$file.php";
 
 new deviantThumbs();
+new deviantThumbsInline();
 new deviantThumbsWidget(__FILE__);
 
 // Template tag

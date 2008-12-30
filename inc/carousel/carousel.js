@@ -1,53 +1,71 @@
-function simpleCarousel(id, nr, speed) {
+jQuery.fn.simpleCarousel = function(nr, speed) {
 	var e = this;
 
-	e.s = speed;
-	e.nr = parseInt(nr);
-	e.c = $(id);			// container
-	e.li = $(e.c).find('li');	// elements
+	nr = parseInt(nr);
+	e.li = e.find('li');	// elements
 	e.n = e.li.length;		// number of elements
 
-	$(e.c).addClass('simple-carousel');
-	$(e.c).prepend('<i class="up disabled">&nbsp;</i>');
-	$(e.c).append('<i class="down">&nbsp;</i>');
+	// Init
+	e.addClass('simple-carousel');
+	e.prepend('<i class="up">&nbsp;</i>');
+	e.append('<i class="down">&nbsp;</i>');
 
-	if ( e.n <= e.nr ) {
-		$(e.c).find('.down').addClass('disabled');
+	// Init hide buttons
+	e.find('.up').hide();
+	if ( e.n <= nr ) {
+		e.find('.down').slideUp(speed);
 		return;
 	}
 
-	$(e.c).find('li:gt('+(nr-1)+')').hide();	// show only the first {nr} elements
+	// Init hide elements
+	e.find('li:gt('+(nr-1)+')').hide();
 
 	e.i = 0;	// index
 	e.l = 0;	// last action
 
-	var move = function(d) {
+	function move(d) {
+		// Rewind index from previous action
 		if ( e.l == -d )
 			e.i = e.i + d;
+
+		// Set d as last action
 		e.l = d;
 
-		if ( (e.i >= 0) && (e.i + e.nr < e.n) ) {
-			$(e.li[e.i]).slideToggle(e.s);
-			$(e.li[e.i+e.nr]).slideToggle(e.s);
+		if ( (e.i >= 0) && (e.i + nr < e.n) ) {
+			// Hide and reveal the top and bottom elements respectively
+			jQuery(e.li[e.i]).slideToggle(speed);
+			jQuery(e.li[e.i+nr]).slideToggle(speed);
+
+			// Update index
 			e.i = e.i + d;
 		}
 	}
 
-	$(e.c).find('.down').click(function() {
+	e.find('.down').click(function() {
 		move(1);
 		if ( e.i > 0 )
-			$(e.c).find('.up').removeClass('disabled');
+			e.find('.up').slideDown(speed);
 
-		if ( e.i == e.n-e.nr )
-			$(e.c).find('.down').addClass('disabled');
+		if ( e.i == e.n-nr )
+			e.find('.down').slideUp(speed);
 	});
 
-	$(e.c).find('.up').click(function() {
+	e.find('.up').click(function() {
 		move(-1);
-		if ( e.i < e.n-e.nr )
-			$(e.c).find('.down').removeClass('disabled');
+		if ( e.i < e.n-nr )
+			e.find('.down').slideDown(speed);
 
 		if ( e.i == -1 )
-			$(e.c).find('.up').addClass('disabled');
+			e.find('.up').slideUp(speed);
 	});
+}
+
+function include_css(filename) {
+	var css = document.createElement('link');
+
+	css.setAttribute('rel', 'stylesheet');
+	css.setAttribute('href', filename);
+	css.setAttribute('type', 'text/css');
+
+	document.getElementsByTagName('head').item(0).appendChild(css);
 }

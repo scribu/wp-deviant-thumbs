@@ -1,7 +1,10 @@
 /* Setup */
-.simple-carousel ul {overflow: hidden; margin: 0 !important; padding: 0 !important}
+.simple-carousel ul {margin: 10px 0 0 !important; padding: 0 !important; overflow: hidden}
 .simple-carousel li {margin: 0 0 10px !important; padding: 0 !important}
 .simple-carousel li:before, .simple-carousel li:after {content: "" !important}
+
+/* Un-comment the following line for a fixed height carousel */
+/* .simple-carousel ul {height: 300px} */
 
 /* DeviantArt v6 skin */
 .simple-carousel {
@@ -14,10 +17,6 @@
 	-webkit-border-radius: 10px;
 	-khtml-border-radius: 10px;
 }
-
-/* Add this line for a fixed height carousel:
-.simple-carousel ul {height: 300px}
-*/
 
 .simple-carousel li img {
 	display: block;
@@ -33,13 +32,12 @@
 	width: 18px;
 	height: 18px;
 	display: block;
-	margin: 10px auto;
+	margin: 0 auto;
 	cursor: pointer;
 }
 
-.simple-carousel .up {background-position: -18px 0}
-.simple-carousel .down {background-position: 0 0; margin-top:0}
-.simple-carousel .disabled {visibility:hidden}
+.simple-carousel .up {background-position: -18px 0; margin-top: 10px}
+.simple-carousel .down {background-position: 0 0; margin-bottom: 10px}
 
 .simple-carousel .up:hover, .simple-carousel .up:active {
 	background-position: -18px -18px;
