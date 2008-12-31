@@ -3,8 +3,8 @@ class deviantThumbsWidget {
 	var $options;
 
 	public function __construct($file) {
-		if ( !class_exists('scbOptions') )
-			require_once('scbOptions.php');
+		if ( ! class_exists('scbOptions') )
+			require_once('inc/scbOptions.php');
 
 		$this->options = new scbOptions('deviant thumbs');
 
