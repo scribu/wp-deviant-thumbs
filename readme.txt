@@ -77,6 +77,11 @@ These are meant to be used outside The Loop.
 
 You enter a search string (the thumbs are found using the search engine from deviantArt). You can read more about [search options](http://help.deviantart.com/577/) there.
 
+**Quick tips:**
+
+* *-in:scraps* excludes scraps
+* *boost:popular* gets the most popular thumbs, instead of the newest
+
 = How can I modifify the carousel skin? =
 
 You can edit `deviant-thumbs/inc/carousel/carousel.css`.
