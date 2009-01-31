@@ -1,47 +1,32 @@
 <?php
-class deviantThumbsWidget {
-	var $options;
 
-	public function __construct($file) {
-		if ( ! class_exists('scbOptions') )
-			require_once('inc/scbOptions.php');
+if ( !class_exists('scbWidget_05') )
+	require_once(dirname(__FILE__) . '/inc/scbWidget.php');
 
-		$this->options = new scbOptions('deviant thumbs');
+class deviantThumbsWidget extends scbWidget_05 {
 
-		register_activation_hook($file, array($this, 'install'));
-		register_uninstall_hook($file, array($this, 'uninstall'));
+	protected function setup() {
+		$this->name = 'Deviant Thumbs';
+		$this->slug = 'deviant-thumbs-widget';
 
-		add_action('plugins_loaded', array($this, 'init'));
-	}
-
-	public function install() {
-		$this->options->update(array(
+		$this->defaults = array(
 			'title' => 'Deviant Thumbs',
 			'query' => 'by:',
+			'scraps' => false,
 			'count' => 3,
 			'carousel' => 1,
-			'rand' => 0,
+			'rand' => false,
 			'cache' => 6
-		), false);
+		);
 	}
 
-	public function uninstall() {
-		$this->options->delete();
-		deviantThumbs::clear_cache();
-	}
-
-	public function init() {
-		if ( !function_exists('register_sidebar_widget') )
-			return;
-
-		register_sidebar_widget('Deviant Thumbs', array($this, 'display'));
-		register_widget_control('Deviant Thumbs', array($this, 'control'), 250, 200);
-	}
-
-	public function display($args) {
+	protected function content() {
 		// Get variables
-		extract($args);
 		extract($this->options->get());
+
+		$remove_scraps = '-in:scraps';
+		if ( !$scraps && FALSE === strpos($query, $remove_scraps) )
+			$query .= " $remove_scraps";
 
 		// Generate content
 		if ( $carousel && class_exists('deviantThumbsCarousel') )
@@ -52,45 +37,59 @@ class deviantThumbsWidget {
 			$content .= '</ul>';
 		}
 
-		// Wrap it up
-		echo $before_widget . $before_title . $title . $after_title . $content . $after_widget;
+		return $content;
 	}
 
-	public function control() {
-		$this->form_handler();
-		extract($this->options->get());
-?>
-	<p><label for="deviant_thumbs-title">Title:</label>
-		<input name="deviant_thumbs-title" type="text" value="<?php echo $title; ?>" style="width: 195px" />
-	</p>
+	protected function control() {
+		$rows = array(
+			array(
+				'title' => 'Title:',
+				'names' => 'title',
+				'type' => 'text',
+			),
+			array(
+				'title' => 'Selection (See the <a href="http://help.deviantart.com/577/" target="_blank">FAQ</a> on dA):',
+				'names' => 'query',
+				'type' => 'text',
+				'desc' => 'Example: <em>by:username in:photography</em>'
+			),
+			array(
+				'title' => 'Display %input% thumbs.',
+				'names' => 'count',
+				'type' => 'text',
+				'extra' => 'class="widefat" style="width: 24px; text-align:right"'
+			),
+			array(
+				'title' => 'Show scraps',
+				'names' => 'scraps',
+				'type' => 'checkbox'
+			),
+			array(
+				'title' => 'Show random thumbs',
+				'names' => 'rand',
+				'type' => 'checkbox',
+			),
+			array(
+				'title' => 'Show as a carousel',
+				'names' => 'carousel',
+				'type' => 'checkbox',
+			),
+			array(
+				'title' => 'Update cache every %input% hours.',
+				'names' => 'cache',
+				'type' => 'text',
+				'extra' => 'class="widefat" style="width: 24px; text-align:right"'
+			)
+		);
 
-	<p><label for="deviant_thumbs-query">Selection (See the <a href="http://help.deviantart.com/577/" target="_blank">FAQ</a> on dA)</label>
-		<input name="deviant_thumbs-query" type="text" value="<?php echo $query; ?>" style="width: 227px" />
-		<br />Example: <em>by:username in:photography</em>
-	</p>
+		$options = $this->options->get();
 
-	<p><label for="deviant_thumbs-count">Number of thumbs:</label>
-		<input name="deviant_thumbs-count" type="text" value="<?php echo $count; ?>" style="width: 20px" />
-	</p>
+		foreach ( $rows as $row )
+			echo $this->input($row, $options);
+	}
 
-	<p><label for="deviant_thumbs-cache">Update cache every</label>
-		<input name="deviant_thumbs-cache" type="text" value="<?php echo $cache; ?>" style="width: 20px" /> hours.
-	</p>
-
-	<p><label for="deviant_thumbs-rand">Show random thumbs:</label>
-		<input name="deviant_thumbs-rand" type="checkbox" <?php if ($rand) echo 'checked="checked"'; ?> value="1">
-	</p>
-
-	<?php if ( class_exists('deviantThumbsCarousel') ) { ?>
-	<p><label for="deviant_thumbs-carousel">Show as a carousel:</label>
-		<input name="deviant_thumbs-carousel" type="checkbox" <?php if ($carousel) echo 'checked="checked"'; ?> value="1">
-	</p>
-	<?php } ?>
-
-	<input name="deviant_thumbs-submit" type="hidden" value="1" />
-<?php }
-
-	private function form_handler() {
+/*
+	private function form_handler_old() {
 		if ( !$_POST['deviant_thumbs-submit'] )
 			return;
 
@@ -104,9 +103,6 @@ class deviantThumbsWidget {
 
 		$this->options->update($newoptions);
 	}
+*/
 }
 
-// < WP 2.7
-if ( !function_exists('register_uninstall_hook') ) :
-function register_uninstall_hook() {}
-endif;
