@@ -9,6 +9,8 @@ abstract class scbWidget_06 extends scbForms_06 {
 
 	protected $name;			// Name for this widget type.
 	protected $id_base;			// Root id for all widgets of this type.
+	protected $defaults;			// Default option values
+
 	protected $widget_options;	// Option array passed to wp_register_sidebar_widget()
 	protected $control_options;	// Option array passed to wp_register_widget_control()
 
@@ -26,8 +28,8 @@ abstract class scbWidget_06 extends scbForms_06 {
 	 *	to generate their widget code. */
 	abstract protected function content($instance);
 
-	// Helper function
-	public function widget($args, $instance) {
+	// Echoes the widget args and calls content()
+	public function content_helper($args, $instance) {
 		extract($args);
 
 		echo $before_widget . $before_title . $instance['title'] . $after_title;
@@ -41,8 +43,25 @@ abstract class scbWidget_06 extends scbForms_06 {
 	abstract function control_update($new_instance, $old_instance);
 
 
-	/** Echo a control form for the current instance. */
-	abstract function control_form($instance);
+	// Echo a control form for the current instance.
+	abstract protected function control_form($instance);
+
+	// Sets defaults and calls control_form()
+	protected function control_form_helper($instance) {
+		// Set defaults for new instances
+		if ( empty($instance) && isset($this->defaults) )
+			$instance = $this->defaults;
+/*
+		// Add hidden field
+		echo $this->input(array(
+			'type' => 'hidden',
+			'names' => 'submit',
+			'values' => 1,
+			'check' => false
+		));
+*/
+		$this->control_form($instance);
+	}
 
 
 	//
@@ -50,50 +69,44 @@ abstract class scbWidget_06 extends scbForms_06 {
 
 	// This adds a widget input field
 	public function input($args, $options = array() ) {
-		$args = wp_parse_args($args, array(
-			'extra' => 'class="widefat"', 
-			'check' => 'false'
-		));
-
 		// Add default label position
 		if ( !in_array($args['type'], array('checkbox', 'radio')) && empty($args['desc_pos']) )
 			$args['desc_pos'] = 'before';
 
-		// First check options
-		if ( !empty($options) )
+		// First check names
+		if ( FALSE !== $args['check'] ) {
 			parent::check_names($args['names'], $options);
-
-		// Then add prefix to names and options fields
-		$new_names = (array) $args['names'];
-		$new_options = array();
-		foreach ( $new_names as $i => $name ) {
-			$new_name = $this->get_field_name($name);
-			$new_names[$i] = $new_name;
-			$new_options[$new_name] = $options[$name];
+			$args['check'] = false;
 		}
 
-		// Finally, replace the $names arg
+		// Then add prefix to names and options
+		$new_options = array();
+		foreach ( (array) $args['names'] as $name )
+			$new_options[ $this->get_field_name($name) ] = $options[$name];
+		$new_names = array_keys($new_options);
+
+		// Finally, replace the old names
 		if ( 1 == count($new_names) )
 			$args['names'] = $new_names[0];
 		else
 			$args['names'] = $new_names;
 
-		// Hijack $desc and replace with $title
+		// Remember $desc and replace with $title
 		if ( $args['desc'] )
 			$desc = "<small>{$args['desc']}</small>";
 		$args['desc'] = $args['title'];
 		unset($args['title']);
 
-		$inputs = parent::input($args, $new_options);
+		$input = parent::input($args, $new_options);
 
-		return "<p>{$inputs}\n<br />\n$desc\n</p>\n";
+		return "<p>{$input}\n<br />\n$desc\n</p>\n";
 	}
 
 
 	//
 	// PRIVATE FUNCTIONS. Don't worry about these.
 
-	// Calls and checks setup and registers widget
+	// Calls setup(), checks widget options and registers widget
 	function __construct() {
 		$this->setup();
 
@@ -117,14 +130,14 @@ abstract class scbWidget_06 extends scbForms_06 {
 	}
 
 
-	/** Helper function to be called by control_form().
+	/** Helper function to be called by input().
 	 *	Returns an HTML name for the field. */
 	function get_field_name($field_name) {
 		return 'widget-'.$this->id_base.'['.$this->number.']['.$field_name.']';
 	}
 
 
-	/** Helper function to be called by control_form().
+	/** Helper function to be called by input().
 	 *	Returns an HTML id for the field. */
 	function get_field_id($field_name) {
 		return 'widget-'.$this->id_base.'-'.$this->number.'-'.$field_name;
@@ -172,7 +185,7 @@ abstract class scbWidget_06 extends scbForms_06 {
 
 
 	/** Generate the actual widget content.
-	 *	Just finds the instance and calls widget().
+	 *	Just finds the instance and calls content_helper().
 	 *	Do NOT over-ride this function. */
 	function widget_callback($args, $widget_args = 1) {
 		if( is_numeric($widget_args) )
@@ -184,7 +197,7 @@ abstract class scbWidget_06 extends scbForms_06 {
 		//	array( number => data for that instance of the widget, ... )
 		$all_instances = get_option($this->option_name);
 		if( isset($all_instances[$this->number]) )
-			$this->widget($args, $all_instances[$this->number]);
+			$this->content_helper($args, $all_instances[$this->number]);
 	}
 
 
@@ -257,7 +270,7 @@ abstract class scbWidget_06 extends scbForms_06 {
 			$this->_set($widget_args['number']);
 			$instance = $all_instances[ $widget_args['number'] ];
 		}
-		$this->control_form($instance);
+		$this->control_form_helper($instance);
 	}
 
 

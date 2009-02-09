@@ -9,6 +9,16 @@ class dtWidget extends scbWidget_06 {
 		$this->name = 'Deviant Thumbs';
 		$this->id_base = 'deviant-thumbs';
 
+		$this->defaults = array(
+			'title' => 'Deviant Thumbs',
+			'query' => 'by:',
+			'scraps' => false,
+			'count' => 3,
+			'carousel' => 1,
+			'rand' => false,
+			'cache' => 6
+		);
+
 		$this->widget_options = array('description' => 'Display thumbs from dA');
 	}
 
@@ -89,9 +99,6 @@ class dtWidget extends scbWidget_06 {
 
 		foreach ( $rows as $row )
 			echo $this->input($row, $instance);
-?>
-	<input type="hidden" name="<?php echo $this->get_field_name('submit') ?>" value="1" />
-<?php
 	}
 }
 
