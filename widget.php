@@ -3,7 +3,7 @@
 if ( !class_exists('scbWidget_06') )
 	require_once(dirname(__FILE__) . '/inc/scbWidget.php');
 
-class dtWidget extends scbWidget_06 {
+class deviantThumbsWidget extends scbWidget_06 {
 
 	protected function setup() {
 		$this->name = 'Deviant Thumbs';
@@ -39,7 +39,7 @@ class dtWidget extends scbWidget_06 {
 		}
 	}
 
-	function control_update($new_instance, $old_instance) {
+	protected function control_update($new_instance, $old_instance) {
 		if ( !isset($new_instance['title']) ) // user clicked cancel
 				return false;
 
@@ -55,7 +55,7 @@ class dtWidget extends scbWidget_06 {
 		return $instance;
 	}
 
-	function control_form($instance) {
+	protected function control_form($instance) {
 		$rows = array(
 			array(
 				'title' => 'Title:',
@@ -101,6 +101,4 @@ class dtWidget extends scbWidget_06 {
 			echo $this->input($row, $instance);
 	}
 }
-
-$dtWidget = new dtWidget();
 
