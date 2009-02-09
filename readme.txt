@@ -3,7 +3,7 @@ Contributors: scribu
 Donate link: http://scribu.net/projects
 Tags: deviantart, thumbs, images
 Requires at least: 2.2
-Tested up to: 2.7
+Tested up to: 2.7.1
 Stable tag: trunk
 
 Display deviantART thumbnails on your blog.
@@ -16,7 +16,8 @@ Display linked thumbnails from deviantART on your WordPress blog.
 
 * **Scrollable carousel**: your thumbs can be displayed in a dA style carousel
 * **Inline deviations**: the code *:thumb98765:* inside a post becomes a thumbnail, just like on dA
-* **Widget support** and **flexible template tags**
+* **Multiple widget support** 
+* **Flexible template tags**
 
 == Installation ==
 
@@ -25,8 +26,8 @@ Display linked thumbnails from deviantART on your WordPress blog.
 
 = Widget Usage =
 
-1. Add the Deviant Thumbs widget to your sidebar.
-1. Set the desired settings for the widget.
+1. Add one or more Deviant Thumbs widgets to your sidebar.
+1. Set the desired settings for each widget.
 1. Enjoy
 
 = Template tags =
