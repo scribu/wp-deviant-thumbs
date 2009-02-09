@@ -20,7 +20,7 @@ Display linked thumbnails from deviantART on your WordPress blog.
 * **Flexible template tags**
 
 == Installation ==
-
+Either use the plugin installer built into WP, or:
 1. Unzip and upload the `deviant-thumbs` directory to the `/wp-content/plugins/` directory.
 1. Activate the plugin through the 'Plugins' menu in WordPress.
 
@@ -34,7 +34,7 @@ Display linked thumbnails from deviantART on your WordPress blog.
 
 These are meant to be used outside The Loop.
 
-**Thumb list**
+**deviant_thumbs()**
 
 `<?php if (function_exists('deviant_thumbs')): ?>
   <ul class="deviant-thumbs">
@@ -54,7 +54,7 @@ These are meant to be used outside The Loop.
 <li>*after* is a string inserted after each thumb. Default: `</li>`</li>
 </ul>
 
-**Carousel**
+**deviant_thumbs_carousel**
 
 `<?php if (function_exists('deviant_thumbs_carousel')): ?>
     <?php deviant_thumbs_carousel($query = 'your query', $args = 'count=10&rand=false&id=my_carousel'); ?>
