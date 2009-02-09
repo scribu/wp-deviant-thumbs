@@ -1,9 +1,8 @@
 <?php
 
-// Version 0.5b
-// TODO: Add select, textarea
+// Version 0.6
 
-abstract class scbForms_05 {
+abstract class scbForms_06 {
 /* Generates one or more input fields with labels
 $args =	array (
 *	'type' => 'submit' | 'text' | 'radio' | 'checkbox'
@@ -14,7 +13,7 @@ $args =	array (
 	'desc' => string
 	'desc_pos' => 'before' | 'after' | 'none'
 );
-$options = array() [values with which to fill]
+$options = array(values with which to fill)
 */
 
 	public function input($args, $options = array()) {
@@ -22,7 +21,8 @@ $options = array() [values with which to fill]
 
 		extract(wp_parse_args($args, array(
 			'desc_pos' => 'after',
-			'check' => true
+			'check' => true,
+			'extra' => 'class="widefat"'
 		)));
 
 		// Check required fields
@@ -33,17 +33,18 @@ $options = array() [values with which to fill]
 			trigger_error('No name specified', E_USER_WARNING);
 
 		// Check for defined options
-		if ( $check && 'submit' != $type )
+		if ( $check && 'submit' != $type && !empty($options) )
 			self::check_names($names, $options);
 
 		$f1 = is_array($names);
 		$f2 = is_array($values);
 
 		// Set default values
-		if ( 'text' == $type && !$f1 && !$f2 )
-			$values = htmlentities(stripslashes($options[$names]));
-		elseif ( in_array($type, array('checkbox', 'radio')) && empty($values) )
-			$values = true;
+		if ( !isset($values) )
+			if ( 'text' == $type && !$f1 && !$f2 )
+				$values = htmlentities(stripslashes($options[$names]));
+			elseif ( in_array($type, array('checkbox', 'radio')) && empty($values) )
+				$values = true;
 
 		// Determine what goes where
 		if ( $f1 || $f2 ) {
@@ -87,6 +88,7 @@ $options = array() [values with which to fill]
 
 			// Add description
 			$desc = $$l1;
+			$desc = str_replace('[]', '', $desc);
 			if ( FALSE == stripos($desc, $token) )
 				if ( 'before' == $desc_pos )
 					$desc .= ' ' . $token;
@@ -123,6 +125,9 @@ $options = array() [values with which to fill]
 	// Used by form_row()
 	protected function check_names($names, $options) {
 		$names = (array) $names;
+
+		foreach ( $names as $i => $name )
+			$names[$i] = str_replace('[]', '', $name);
 
 		foreach ( array_diff($names, array_keys($options)) as $key )
 			trigger_error("Option not defined: {$key}", E_USER_WARNING);

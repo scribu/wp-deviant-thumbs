@@ -1,28 +1,19 @@
 <?php
 
-if ( !class_exists('scbWidget_05') )
+if ( !class_exists('scbWidget_06') )
 	require_once(dirname(__FILE__) . '/inc/scbWidget.php');
 
-class deviantThumbsWidget extends scbWidget_05 {
+class dtWidget extends scbWidget_06 {
 
 	protected function setup() {
 		$this->name = 'Deviant Thumbs';
-		$this->slug = 'deviant-thumbs-widget';
+		$this->id_base = 'deviant-thumbs';
 
-		$this->defaults = array(
-			'title' => 'Deviant Thumbs',
-			'query' => 'by:',
-			'scraps' => false,
-			'count' => 3,
-			'carousel' => 1,
-			'rand' => false,
-			'cache' => 6
-		);
+		$this->widget_options = array('description' => 'Display thumbs from dA');
 	}
 
-	protected function content() {
-		// Get variables
-		extract($this->options->get());
+	protected function content($instance) {
+		extract($instance);
 
 		$remove_scraps = '-in:scraps';
 		if ( !$scraps && FALSE === strpos($query, $remove_scraps) )
@@ -30,17 +21,31 @@ class deviantThumbsWidget extends scbWidget_05 {
 
 		// Generate content
 		if ( $carousel && class_exists('deviantThumbsCarousel') )
-			$content .= deviantThumbsCarousel::carousel($query, compact('count', 'rand', 'cache'));
+			echo deviantThumbsCarousel::carousel($query, compact('count', 'rand', 'cache'));
 		else {
-			$content .= '<ul id="deviant-thumbs">';
-			$content .= deviantThumbs::get($query, compact('count', 'rand', 'cache'));
-			$content .= '</ul>';
+			echo '<ul id="deviant-thumbs">';
+			echo deviantThumbs::get($query, compact('count', 'rand', 'cache'));
+			echo '</ul>';
 		}
-
-		return $content;
 	}
 
-	protected function control() {
+	function control_update($new_instance, $old_instance) {
+		if ( !isset($new_instance['title']) ) // user clicked cancel
+				return false;
+
+		$instance = $old_instance;
+		$instance['title'] = wp_specialchars( $new_instance['title'] );
+		$instance['query'] = wp_specialchars( $new_instance['query'] );
+		$instance['count'] = (int) $new_instance['count'];
+		$instance['carousel'] = (bool) $new_instance['carousel'];
+		$instance['rand'] = (bool) $new_instance['rand'];
+		$instance['scraps'] = (bool) $new_instance['scraps'];
+		$instance['cache'] = (int) $new_instance['cache'];
+
+		return $instance;
+	}
+
+	function control_form($instance) {
 		$rows = array(
 			array(
 				'title' => 'Title:',
@@ -82,27 +87,13 @@ class deviantThumbsWidget extends scbWidget_05 {
 			)
 		);
 
-		$options = $this->options->get();
-
 		foreach ( $rows as $row )
-			echo $this->input($row, $options);
+			echo $this->input($row, $instance);
+?>
+	<input type="hidden" name="<?php echo $this->get_field_name('submit') ?>" value="1" />
+<?php
 	}
-
-/*
-	private function form_handler_old() {
-		if ( !$_POST['deviant_thumbs-submit'] )
-			return;
-
-		// Collect new options
-		$newoptions['title'] = strip_tags(stripslashes($_POST['deviant_thumbs-title']));
-		$newoptions['query'] = strip_tags(stripslashes($_POST['deviant_thumbs-query']));
-		$newoptions['count'] = (int) $_POST['deviant_thumbs-count'];
-		$newoptions['carousel'] = (bool) $_POST['deviant_thumbs-carousel'];
-		$newoptions['rand'] = (bool) $_POST['deviant_thumbs-rand'];
-		$newoptions['cache'] = (int) $_POST['deviant_thumbs-cache'];
-
-		$this->options->update($newoptions);
-	}
-*/
 }
+
+$dtWidget = new dtWidget();
 
