@@ -21,6 +21,7 @@ Display linked thumbnails from deviantART on your WordPress blog.
 
 == Installation ==
 Either use the plugin installer built into WP, or:
+
 1. Unzip and upload the `deviant-thumbs` directory to the `/wp-content/plugins/` directory.
 1. Activate the plugin through the 'Plugins' menu in WordPress.
 
