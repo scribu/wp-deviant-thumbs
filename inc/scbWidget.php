@@ -150,19 +150,19 @@ abstract class scbWidget_06 extends scbForms_06 {
 	/** Helper function: Registers a single instance. */
 	protected function _register_one($number = -1) {
 		wp_register_sidebar_widget(
-				$this->id, 
-				$this->name, 
-				array($this, 'widget_callback'), 
-				$this->widget_options, 
-				array( 'number' => $number )
-			);
+			$this->id, 
+			$this->name, 
+			array($this, 'widget_callback'), 
+			$this->widget_options, 
+			array( 'number' => $number )
+		);
 		wp_register_widget_control(
-				$this->id, 
-				$this->name, 
-				array($this, 'control_callback'),
-				$this->control_options, 
-				array( 'number' => $number )
-			);
+			$this->id, 
+			$this->name, 
+			array($this, 'control_callback'),
+			$this->control_options, 
+			array( 'number' => $number )
+		);
 	}
 
 	/** Registers this widget-type.
@@ -175,6 +175,7 @@ abstract class scbWidget_06 extends scbForms_06 {
 			// Old widgets can have null values for some reason
 			if( !isset($all_instances[$number]['__multiwidget']) )
 				continue;
+
 			$this->_set($number);
 			$registered = true;
 			$this->_register_one($number);

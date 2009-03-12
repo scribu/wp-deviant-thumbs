@@ -1,7 +1,7 @@
 <?php
 /*
 Plugin Name: Deviant Thumbs
-Version: 1.8
+Version: 1.8.1
 Description: Display clickable deviation thumbs from deviantART.
 Author: scribu
 Author URI: http://scribu.net/
@@ -114,12 +114,16 @@ class deviantThumbs {
 }
 
 // Init
-foreach ( array('carousel', 'widget', 'inline') as $file )
-	include_once dirname(__FILE__) . "/$file.php";
+deviant_thumbs_init();
 
-new deviantThumbs();
-new deviantThumbsWidget();
-new deviantThumbsInline();
+function deviant_thumbs_init() {
+	foreach ( array('carousel', 'widget', 'inline') as $file )
+		require_once(dirname(__FILE__) . "/$file.php");
+
+	new deviantThumbs();
+	new deviantThumbsInline();
+	new deviantThumbsWidget();
+}
 
 // Template tag
 function deviant_thumbs($query, $args = '') {

@@ -34,18 +34,17 @@ jQuery(window).load(function() {
 	}
 
 	private function maybe_add_scripts() {
-		global $wp_scripts, $dt_scripts;
+		global $wp_scripts;
 
-		if ( $dt_scripts )
+		if ( $scripts_done )
 			return;
-
-		$dt_scripts = true;
+		static $scripts_done = true;
 
 		$carousel_url = self::get_plugin_url() . '/inc/carousel';
 
 		$scriptf = "<script language='javascript' type='text/javascript' src='%s'></script>";
 
-		if ( !@in_array('jquery', $wp_scripts->done) )
+		if ( ! @in_array('jquery', $wp_scripts->done) )
 			$code[] = sprintf($scriptf, get_option('siteurl') . "/wp-includes/js/jquery/jquery.js");
 
 		$code[] = sprintf($scriptf, $carousel_url . '/carousel.js');
