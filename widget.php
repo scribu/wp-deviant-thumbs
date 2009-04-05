@@ -1,11 +1,8 @@
 <?php
 
-if ( !class_exists('scbWidget_06') )
-	require_once(dirname(__FILE__) . '/inc/scbWidget.php');
+class deviantThumbsWidget extends scbWidget {
 
-class deviantThumbsWidget extends scbWidget_06 {
-
-	protected function setup() {
+	function setup() {
 		$this->name = 'Deviant Thumbs';
 		$this->id_base = 'deviant-thumbs';
 
@@ -22,7 +19,7 @@ class deviantThumbsWidget extends scbWidget_06 {
 		$this->widget_options = array('description' => 'Display thumbs from dA');
 	}
 
-	protected function content($instance) {
+	function content($instance) {
 		extract($instance);
 
 		$remove_scraps = '-in:scraps';
@@ -39,7 +36,7 @@ class deviantThumbsWidget extends scbWidget_06 {
 		}
 	}
 
-	protected function control_update($new_instance, $old_instance) {
+	function control_update($new_instance, $old_instance) {
 		if ( !isset($new_instance['title']) ) // user clicked cancel
 				return false;
 
@@ -55,7 +52,7 @@ class deviantThumbsWidget extends scbWidget_06 {
 		return $instance;
 	}
 
-	protected function control_form($instance) {
+	function control_form($instance) {
 		$rows = array(
 			array(
 				'title' => 'Title:',

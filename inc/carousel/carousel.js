@@ -1,5 +1,5 @@
-jQuery.fn.simpleCarousel = function(nr, speed) {
-	var e = this;
+simpleCarousel = function(id, nr, speed) {
+	var e = jQuery(id);
 
 	nr = parseInt(nr);
 	e.li = e.find('li');	// elements
@@ -61,11 +61,6 @@ jQuery.fn.simpleCarousel = function(nr, speed) {
 }
 
 function include_css(filename) {
-	var css = document.createElement('link');
-
-	css.setAttribute('rel', 'stylesheet');
-	css.setAttribute('href', filename);
-	css.setAttribute('type', 'text/css');
-
-	document.getElementsByTagName('head').item(0).appendChild(css);
+	jQuery('head').append('<link rel="stylesheet" href="' + filename + '" type="text/css" media="screen" />');
 }
+

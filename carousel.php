@@ -1,65 +1,77 @@
 <?php
+
 class deviantThumbsCarousel {
-	public function carousel($query, $args = '') {
-		extract(wp_parse_args($args, array(
-			'id' => 'da-carousel',
+	function carousel($query, $args = '') {
+		$args = wp_parse_args($args, array(
 			'count' => 6,
 			'show' => 3,
 			'rand'  => true,
 			'speed' => 'fast',
-			'cache' => 6
-		)), EXTR_SKIP);
+			'cache' => 6,
 
-		$before = "\t\t<li>";
-		$after = "</li>";
+			'id' => sanitize_title_with_dashes($query),
+			'before' => "\t\t<li>",
+			'after' => "</li>"
+		));
 
-		$thumbs = deviantThumbs::get($query, compact('count', 'rand', 'cache', 'before', 'after'));
+		deviantThumbsCarousel::add_scripts($args);
 
-		$output = self::maybe_add_scripts();
+		$thumbs = deviantThumbs::get($query, $args);
 
-		$output .= "
-<div id='$id'>
-	<ul>
-$thumbs
-	</ul>
-</div>
-<script language='javascript' type='text/javascript'>
-jQuery(window).load(function() {
-	jQuery('#$id').simpleCarousel($show, '$speed');
-});
-</script>
-";
+		$output = "<div id='" . $args['id'] . "'><ul>\n{$thumbs}</ul></div>\n";
 
 		return $output;
 	}
 
-	private function maybe_add_scripts() {
-		global $wp_scripts;
+	function add_scripts($args) {
+		global $dt_carousel_instances, $wp_scripts;
 
-		if ( $scripts_done )
+		$dt_carousel_instances[] = $args;
+
+		if ( isset($done) )
 			return;
-		static $scripts_done = true;
 
-		$carousel_url = self::get_plugin_url() . '/inc/carousel';
+		static $done = true;
 
-		$scriptf = "<script language='javascript' type='text/javascript' src='%s'></script>";
+		add_action('wp_footer', array('deviantThumbsCarousel', 'init_carousel'));
+	}
+
+	function init_carousel() {
+		global $dt_carousel_instances;
+
+//		wp_enqueue_script('simple-carousel', DT_CAROUSEL_URL . '/carousel.js', array('jquery'), '1.8', true);
+
+		$carousel_url = deviantThumbsCarousel::get_plugin_url() . '/inc/carousel';
+
+		$scriptf = "\n<script language='javascript' type='text/javascript' src='%s'></script>";
 
 		if ( ! @in_array('jquery', $wp_scripts->done) )
 			$code[] = sprintf($scriptf, get_option('siteurl') . "/wp-includes/js/jquery/jquery.js");
 
 		$code[] = sprintf($scriptf, $carousel_url . '/carousel.js');
 
-		$code[] = "<script language='javascript' type='text/javascript'>include_css('$carousel_url/carousel.css');</script>";
+		echo "\n<!--Deviant Thumbs Carousel [begin]-->";
+		echo implode('', $code);
 
-		return implode("\n", $code);
+		$code = '';
+		foreach ( array_unique($dt_carousel_instances) as $i ) {
+			extract($i);
+			$code[] = "\tsimpleCarousel('#{$id}', {$show}, '{$speed}');";
+		}
+
+		echo "\n<script language='javascript' type='text/javascript'>\n";
+		echo "include_css('" . $carousel_url . "/carousel.css');\n";
+		echo "jQuery(window).load(function() {\n" . implode("\n", $code) . "\n});\n";
+		echo "</script>";
+		echo "\n<!--Deviant Thumbs Carousel [end]-->";
 	}
 
-	private function get_plugin_url() {
+	function get_plugin_url() {
 		if ( function_exists('plugins_url') )
 			return plugins_url(plugin_basename(dirname(__FILE__)));
-		else
-			// Pre-2.6 compatibility
-			return get_option('siteurl') . '/wp-content/plugins/' . plugin_basename(dirname(__FILE__));
+
+		// WP < 2.6
+		return get_bloginfo('url') . '/wp-content/plugins/' . plugin_basename(dirname(__FILE__));
 	}
 }
 

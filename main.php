@@ -1,7 +1,7 @@
 <?php
 /*
 Plugin Name: Deviant Thumbs
-Version: 1.8.1
+Version: 1.8.2
 Description: Display clickable deviation thumbs from deviantART.
 Author: scribu
 Author URI: http://scribu.net/
@@ -24,7 +24,8 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
 class deviantThumbs {
-	public function __construct() {
+
+	function __construct() {
 		$wud = wp_upload_dir();
 		define('DTHUMBS_CACHE_DIR', $wud['basedir'].'/deviant-thumbs');
 
@@ -34,7 +35,12 @@ class deviantThumbs {
 		register_deactivation_hook(__FILE__, array($this, 'clear_cache'));
 	}
 
-	public function clear_cache() {
+	// PHP < 5
+	function deviantThumbs() {
+		$this->__construct();
+	}
+
+	function clear_cache() {
 		$dir_handle = @opendir(DTHUMBS_CACHE_DIR);
 
 		if ( FALSE == $dir_handle )
@@ -48,7 +54,7 @@ class deviantThumbs {
 		@rmdir(DTHUMBS_CACHE_DIR);
 	}
 
-	public function get($query, $args = '') {
+	function get($query, $args = '') {
 		extract(wp_parse_args($args, array(
 			'count' => 6,
 			'rand'  => true,
@@ -63,10 +69,10 @@ class deviantThumbs {
 		$file = DTHUMBS_CACHE_DIR . '/' . urlencode($query) . '.txt';
 
 		// Get thumbs
-		if ( file_exists($file) && (time()-filemtime($file) <= $cache) )
+		if ( file_exists($file) && (time() - filemtime($file) <= $cache) )
 			$thumbs = explode("\n", file_get_contents($file));
 		else
-			$thumbs = self::get_from_pipe($query, $count, $file);
+			$thumbs = deviantThumbs::get_from_pipe($query, $count, $file);
 
 		// Randomize thumbs
 		if ( $rand )
@@ -79,7 +85,7 @@ class deviantThumbs {
 		return $output;
 	}
 
-	private function get_from_pipe($query, $count, $file) {
+	function get_from_pipe($query, $count, $file) {
 		require_once(ABSPATH . WPINC . '/class-snoopy.php');
 
 		// Set query sort
@@ -117,6 +123,8 @@ class deviantThumbs {
 deviant_thumbs_init();
 
 function deviant_thumbs_init() {
+	require_once(dirname(__FILE__) . '/inc/scb/load.php');
+
 	foreach ( array('carousel', 'widget', 'inline') as $file )
 		require_once(dirname(__FILE__) . "/$file.php");
 

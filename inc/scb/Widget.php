@@ -1,49 +1,54 @@
 <?php
 
-if ( ! class_exists('scbForms_06') )
-	require_once(dirname(__FILE__) . '/scbForms.php');
-
-abstract class scbWidget_06 extends scbForms_06 {
+class scbWidget extends scbForms {
 	//
 	// Interesting member variables.
-	protected $name;			// Name for this widget type.
-	protected $id_base;			// Root id for all widgets of this type.
-	protected $defaults;		// Default option values
+	var $name;			// Name for this widget type.
+	var $id_base;			// Root id for all widgets of this type.
+	var $defaults;		// Default option values
 
-	protected $widget_options;	// Option array passed to wp_register_sidebar_widget()
-	protected $control_options;	// Option array passed to wp_register_widget_control()
+	var $widget_options;	// Option array passed to wp_register_sidebar_widget()
+	var $control_options;	// Option array passed to wp_register_widget_control()
 
 	//
 	// Not-so-interesting member variables
-	protected $number = false;	// Unique ID number of the current instance.
-	protected $id = false; 		// Unique ID string of the current instance (id_base-number)
-	protected $instances;		// scbOptions object holder
+	var $number = false;	// Unique ID number of the current instance.
+	var $id = false; 		// Unique ID string of the current instance (id_base-number)
+	var $instances;		// scbOptions object holder
 
 
 	//
 	// Member functions that you must over-ride.
 
 	// This is where the widget options and defaults go
-	abstract protected function setup();
+	function setup() {
+		trigger_error( "scbWidget::setup() must be over-ridden in a sub-class", E_USER_ERROR );
+	}
 
 	/** Echo the actual widget content. Subclasses should over-ride this function
 	 *	to generate their widget code. */
-	abstract protected function content($instance);
+	function content($instance) {
+		trigger_error( "scbWidget::content() must be over-ridden in a sub-class", E_USER_ERROR );
+	}
 
 	/** Update a particular instance.
 	 *	This function should check that $new_instance is set correctly.
 	 *	The newly calculated value of $instance should be returned. */
-	abstract protected function control_update($new_instance, $old_instance);
+	function control_update($new_instance, $old_instance) {
+		return $new_instance;
+	}
 
 	// Echo a control form for the current instance.
-	abstract protected function control_form($instance);
+	function control_form($instance) {
+		echo '<p>' . __('There are no options for this widget.') . '</p>';
+	}
 
 
 	//
 	// Helper methods that you might want to over-ride (optional)
 
 	// Echoes the widget args and calls content()
-	protected function content_helper($args, $instance) {
+	function content_helper($args, $instance) {
 		extract($args);
 
 		echo $before_widget . $before_title . $instance['title'] . $after_title;
@@ -52,7 +57,7 @@ abstract class scbWidget_06 extends scbForms_06 {
 	}
 
 	// Sets defaults and calls control_form()
-	protected function control_form_helper($instance) {
+	function control_form_helper($instance) {
 		// Set defaults for new instances
 		if ( empty($instance) && isset($this->defaults) )
 			$instance = $this->defaults;
@@ -61,7 +66,7 @@ abstract class scbWidget_06 extends scbForms_06 {
 	}
 
 	// Calls setup(), checks widget options and registers widget
-	public function __construct() {
+	function __construct() {
 		$this->setup();
 
 		// Check for required fields
@@ -79,33 +84,35 @@ abstract class scbWidget_06 extends scbForms_06 {
 		$this->control_options = wp_parse_args($this->control_options, array('id_base' => $this->id_base));
 
 		// Create instances object
-		if ( ! class_exists('scbOptions_05') )
-			require_once(dirname(__FILE__) . '/scbOptions.php');
-		$this->instances = new scbOptions_05($option_name);
+		$this->instances = new scbOptions($option_name);
 
 		add_action('widgets_init', array($this, 'register'));
 	}
 
+	// PHP < 4
+	function scbWidget() {
+		$this->__construct();
+	}
 
 	//
 	// Functions you'll want to call
 
 	// This adds a widget input field
-	public function input($args, $options = array() ) {
+	function input($args, $options = array()) {
 		// Add default label position
 		if ( !in_array($args['type'], array('checkbox', 'radio')) && empty($args['desc_pos']) )
 			$args['desc_pos'] = 'before';
 
 		// First check names
 		if ( FALSE !== $args['check'] ) {
-			parent::check_names($args['names'], $options);
+			parent::_check_names($args['names'], $options);
 			$args['check'] = false;
 		}
 
 		// Then add prefix to names and options
 		$new_options = array();
 		foreach ( (array) $args['names'] as $name )
-			$new_options[ $this->get_field_name($name) ] = $options[$name];
+			$new_options[ self::get_field_name($name) ] = $options[$name];
 		$new_names = array_keys($new_options);
 
 		// Finally, replace the old names
@@ -131,24 +138,24 @@ abstract class scbWidget_06 extends scbForms_06 {
 
 	/** Helper function to be called by input().
 	 *	Returns an HTML name for the field. */
-	protected function get_field_name($field_name) {
+	function get_field_name($field_name) {
 		return 'widget-'.$this->id_base.'['.$this->number.']['.$field_name.']';
 	}
 
 	/** Helper function to be called by input().
 	 *	Returns an HTML id for the field. */
-	protected function get_field_id($field_name) {
+	function get_field_id($field_name) {
 		return 'widget-'.$this->id_base.'-'.$this->number.'-'.$field_name;
 	}
 
 	/** Sets current instance number and id */
-	protected function _set($number) {
+	function _set($number) {
 		$this->number = $number;
 		$this->id = $this->id_base.'-'.$number;
 	}
 
 	/** Helper function: Registers a single instance. */
-	protected function _register_one($number = -1) {
+	function _register_one($number = -1) {
 		wp_register_sidebar_widget(
 			$this->id, 
 			$this->name, 
@@ -167,7 +174,7 @@ abstract class scbWidget_06 extends scbForms_06 {
 
 	/** Registers this widget-type.
 	 *	Must be called during the 'widget_init' action. */
-	public function register() {
+	function register() {
 		$all_instances = (array) $this->instances->get();
 
 		$registered = false;
@@ -192,7 +199,7 @@ abstract class scbWidget_06 extends scbForms_06 {
 	/** Generate the actual widget content.
 	 *	Just finds the instance and calls content_helper().
 	 *	Do NOT over-ride this function. */
-	public function widget_callback($args, $widget_args = 1) {
+	function widget_callback($args, $widget_args = 1) {
 		if( is_numeric($widget_args) )
 			$widget_args = array( 'number' => $widget_args );
 		$widget_args = wp_parse_args( $widget_args, array( 'number' => -1 ) );
@@ -207,7 +214,7 @@ abstract class scbWidget_06 extends scbForms_06 {
 
 	/** Deal with changed settings and generate the control form.
 	 *	Do NOT over-ride this function. */
-	public function control_callback($widget_args = 1) {
+	function control_callback($widget_args = 1) {
 		global $wp_registered_widgets;
 
 		if( is_numeric($widget_args) )
