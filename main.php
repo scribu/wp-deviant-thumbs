@@ -1,7 +1,7 @@
 <?php
 /*
 Plugin Name: Deviant Thumbs
-Version: 1.8.2.1
+Version: 1.8.4a
 Description: Display clickable deviation thumbs from deviantART.
 Author: scribu
 Author URI: http://scribu.net/
@@ -23,9 +23,12 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-class deviantThumbs {
+require_once dirname(__FILE__) . '/inc/scb-check.php';
+if ( !scb_check(__FILE__) ) return;
 
-	function __construct() {
+class deviantThumbs {
+	function __construct()
+	{
 		$wud = wp_upload_dir();
 		define('DTHUMBS_CACHE_DIR', $wud['basedir'].'/deviant-thumbs');
 
@@ -35,12 +38,8 @@ class deviantThumbs {
 		register_deactivation_hook(__FILE__, array($this, 'clear_cache'));
 	}
 
-	// PHP < 5
-	function deviantThumbs() {
-		$this->__construct();
-	}
-
-	function clear_cache() {
+	static function clear_cache()
+	{
 		$dir_handle = @opendir(DTHUMBS_CACHE_DIR);
 
 		if ( FALSE == $dir_handle )
@@ -54,7 +53,8 @@ class deviantThumbs {
 		@rmdir(DTHUMBS_CACHE_DIR);
 	}
 
-	function get($query, $args = '') {
+	static function get($query, $args = '')
+	{
 		extract(wp_parse_args($args, array(
 			'count' => 6,
 			'rand'  => true,
@@ -85,7 +85,8 @@ class deviantThumbs {
 		return $output;
 	}
 
-	function get_from_pipe($query, $count, $file) {
+	static function get_from_pipe($query, $count, $file)
+	{
 		require_once(ABSPATH . WPINC . '/class-snoopy.php');
 
 		// Set query sort
@@ -100,7 +101,8 @@ class deviantThumbs {
 		$snoop = new Snoopy();
 		$snoop->fetch($pipeurl);
 
-		if ( $snoop->error ) {
+		if ( $snoop->error )
+		{
 			trigger_error($snoop->error, E_USER_WARNING);
 			return FALSE;
 		}
@@ -122,19 +124,18 @@ class deviantThumbs {
 // Init
 deviant_thumbs_init();
 
-function deviant_thumbs_init() {
-	require_once(dirname(__FILE__) . '/inc/scb/load.php');
-
+function deviant_thumbs_init()
+{
 	foreach ( array('carousel', 'widget', 'inline') as $file )
 		require_once(dirname(__FILE__) . "/$file.php");
 
 	new deviantThumbs();
 	new deviantThumbsInline();
-	new deviantThumbsWidget();
 }
 
 // Template tag
-function deviant_thumbs($query, $args = '') {
+function deviant_thumbs($query, $args = '')
+{
 	echo deviantThumbs::get($query, $args);
 }
 

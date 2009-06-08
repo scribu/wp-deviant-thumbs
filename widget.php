@@ -1,13 +1,13 @@
 <?php
 
-class deviantThumbsWidget extends scbWidget {
-
-	function setup() {
-		$this->name = 'Deviant Thumbs';
-		$this->id_base = 'deviant-thumbs';
-
-		$this->defaults = array(
+class deviantThumbsWidget extends scbWidget
+{
+	function deviantThumbsWidget()
+	{
+	
+		$widget_ops = array(
 			'title' => 'Deviant Thumbs',
+			'description' => 'Display thumbs from dA',
 			'query' => 'by:',
 			'scraps' => false,
 			'count' => 3,
@@ -16,10 +16,11 @@ class deviantThumbsWidget extends scbWidget {
 			'cache' => 6
 		);
 
-		$this->widget_options = array('description' => 'Display thumbs from dA');
+		$this->WP_Widget('deviant-thumbs', 'Deviant Thumbs', $widget_ops);
 	}
 
-	function content($instance) {
+	function content($instance)
+	{
 		extract($instance);
 
 		$remove_scraps = '-in:scraps';
@@ -36,7 +37,8 @@ class deviantThumbsWidget extends scbWidget {
 		}
 	}
 
-	function control_update($new_instance, $old_instance) {
+	function update($new_instance, $old_instance)
+	{
 		if ( !isset($new_instance['title']) ) // user clicked cancel
 				return false;
 
@@ -52,43 +54,44 @@ class deviantThumbsWidget extends scbWidget {
 		return $instance;
 	}
 
-	function control_form($instance) {
+	function form($instance)
+	{
 		$rows = array(
 			array(
 				'title' => 'Title:',
-				'names' => 'title',
+				'name' => 'title',
 				'type' => 'text',
 			),
 			array(
 				'title' => 'Selection (See the <a href="http://help.deviantart.com/577/" target="_blank">FAQ</a> on dA):',
-				'names' => 'query',
+				'name' => 'query',
 				'type' => 'text',
 				'desc' => 'Example: <em>by:username in:photography</em>'
 			),
 			array(
 				'title' => 'Display %input% thumbs.',
-				'names' => 'count',
+				'name' => 'count',
 				'type' => 'text',
 				'extra' => 'class="widefat" style="width: 24px; text-align:right"'
 			),
 			array(
 				'title' => 'Show scraps',
-				'names' => 'scraps',
+				'name' => 'scraps',
 				'type' => 'checkbox'
 			),
 			array(
 				'title' => 'Show random thumbs',
-				'names' => 'rand',
+				'name' => 'rand',
 				'type' => 'checkbox',
 			),
 			array(
 				'title' => 'Show as a carousel',
-				'names' => 'carousel',
+				'name' => 'carousel',
 				'type' => 'checkbox',
 			),
 			array(
 				'title' => 'Update cache every %input% hours.',
-				'names' => 'cache',
+				'name' => 'cache',
 				'type' => 'text',
 				'extra' => 'class="widefat" style="width: 24px; text-align:right"'
 			)
@@ -98,4 +101,6 @@ class deviantThumbsWidget extends scbWidget {
 			echo $this->input($row, $instance);
 	}
 }
+
+add_action('widgets_init', create_function('', "register_widget('deviantThumbsWidget');"));
 

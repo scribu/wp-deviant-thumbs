@@ -4,7 +4,7 @@ Donate link: http://scribu.net/wordpress
 Tags: deviantart, thumbs, images
 Requires at least: 2.2
 Tested up to: 2.8
-Stable tag: trunk
+Stable tag: 1.8.3
 
 Display deviantART thumbnails on your blog.
 
