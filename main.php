@@ -131,6 +131,8 @@ function deviant_thumbs_init()
 
 	new deviantThumbs();
 	new deviantThumbsInline();
+
+	dtWidget_init(__FILE__);
 }
 
 // Template tag

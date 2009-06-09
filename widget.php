@@ -4,7 +4,15 @@ class deviantThumbsWidget extends scbWidget
 {
 	function deviantThumbsWidget()
 	{
-	
+		$this->defaults = array(
+			'query' => 'by:',
+			'scraps' => false,
+			'count' => 3,
+			'carousel' => 1,
+			'rand' => false,
+			'cache' => 6
+		);
+
 		$widget_ops = array(
 			'title' => 'Deviant Thumbs',
 			'description' => 'Display thumbs from dA',
@@ -24,7 +32,8 @@ class deviantThumbsWidget extends scbWidget
 		// Generate content
 		if ( $carousel && class_exists('deviantThumbsCarousel') )
 			echo deviantThumbsCarousel::carousel($query, compact('count', 'rand', 'cache'));
-		else {
+		else 
+		{
 			echo '<ul id="deviant-thumbs">';
 			echo deviantThumbs::get($query, compact('count', 'rand', 'cache'));
 			echo '</ul>';
@@ -37,8 +46,8 @@ class deviantThumbsWidget extends scbWidget
 				return false;
 
 		$instance = $old_instance;
-		$instance['title'] = wp_specialchars( $new_instance['title'] );
-		$instance['query'] = wp_specialchars( $new_instance['query'] );
+		$instance['title'] = esc_html( $new_instance['title'] );
+		$instance['query'] = esc_html( $new_instance['query'] );
 		$instance['count'] = (int) $new_instance['count'];
 		$instance['carousel'] = (bool) $new_instance['carousel'];
 		$instance['rand'] = (bool) $new_instance['rand'];
@@ -51,14 +60,7 @@ class deviantThumbsWidget extends scbWidget
 	function form($instance)
 	{
 		if ( empty($instance) )
-			$instance = array(
-				'query' => 'by:',
-				'scraps' => false,
-				'count' => 3,
-				'carousel' => 1,
-				'rand' => false,
-				'cache' => 6
-			);
+			$instance = $this->defaults;
 
 		$rows = array(
 			array(
@@ -106,5 +108,9 @@ class deviantThumbsWidget extends scbWidget
 	}
 }
 
-add_action('widgets_init', create_function('', "register_widget('deviantThumbsWidget');"));
+function dtWidget_init($file)
+{
+	register_activation_hook($file, create_function('', "scbWidget::migrate('deviant-thumbs');"));
+	add_action('widgets_init', create_function('', "register_widget('deviantThumbsWidget');"));
+}
 
