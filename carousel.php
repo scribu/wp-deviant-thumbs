@@ -1,7 +1,11 @@
 <?php
 
-class deviantThumbsCarousel {
-	function carousel($query, $args = '') {
+class deviantThumbsCarousel 
+{
+	static $carousels = array();
+
+	function carousel($query, $args = '')
+	{
 		$args = wp_parse_args($args, array(
 			'count' => 6,
 			'show' => 3,
@@ -14,7 +18,7 @@ class deviantThumbsCarousel {
 			'after' => "</li>"
 		));
 
-		deviantThumbsCarousel::add_scripts($args);
+		self::add_scripts($args);
 
 		$thumbs = deviantThumbs::get($query, $args);
 
@@ -23,25 +27,18 @@ class deviantThumbsCarousel {
 		return $output;
 	}
 
-	function add_scripts($args) {
-		global $dt_carousel_instances, $wp_scripts;
+	function add_scripts($args)
+	{
+		self::$carousels[] = $args;
 
-		$dt_carousel_instances[] = $args;
-
-		if ( isset($done) )
-			return;
-
-		static $done = true;
-
-		add_action('wp_footer', array('deviantThumbsCarousel', 'init_carousel'));
+		add_action('wp_footer', array(__CLASS__, 'init_carousel'));
 	}
 
-	function init_carousel() {
-		global $dt_carousel_instances;
+	function init_carousel()
+	{
+		global $wp_scripts;
 
-//		wp_enqueue_script('simple-carousel', DT_CAROUSEL_URL . '/carousel.js', array('jquery'), '1.8', true);
-
-		$carousel_url = deviantThumbsCarousel::get_plugin_url() . '/inc/carousel';
+		$carousel_url = self::get_plugin_url() . '/inc/carousel';
 
 		$scriptf = "\n<script language='javascript' type='text/javascript' src='%s'></script>";
 
@@ -54,7 +51,7 @@ class deviantThumbsCarousel {
 		echo implode('', $code);
 
 		$code = '';
-		foreach ( array_unique($dt_carousel_instances) as $i ) {
+		foreach ( self::$carousels as $i ) {
 			extract($i);
 			$code[] = "\tsimpleCarousel('#{$id}', {$show}, '{$speed}');";
 		}
@@ -66,7 +63,8 @@ class deviantThumbsCarousel {
 		echo "\n<!--Deviant Thumbs Carousel [end]-->";
 	}
 
-	function get_plugin_url() {
+	function get_plugin_url()
+	{
 		if ( function_exists('plugins_url') )
 			return plugins_url(plugin_basename(dirname(__FILE__)));
 
@@ -76,7 +74,8 @@ class deviantThumbsCarousel {
 }
 
 // Template tag
-function deviant_thumbs_carousel($query, $args = '') {
+function deviant_thumbs_carousel($query, $args = '')
+{
 	echo deviantThumbsCarousel::carousel($query, $args);
 }
 

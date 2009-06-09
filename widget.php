@@ -8,12 +8,6 @@ class deviantThumbsWidget extends scbWidget
 		$widget_ops = array(
 			'title' => 'Deviant Thumbs',
 			'description' => 'Display thumbs from dA',
-			'query' => 'by:',
-			'scraps' => false,
-			'count' => 3,
-			'carousel' => 1,
-			'rand' => false,
-			'cache' => 6
 		);
 
 		$this->WP_Widget('deviant-thumbs', 'Deviant Thumbs', $widget_ops);
@@ -56,6 +50,16 @@ class deviantThumbsWidget extends scbWidget
 
 	function form($instance)
 	{
+		if ( empty($instance) )
+			$instance = array(
+				'query' => 'by:',
+				'scraps' => false,
+				'count' => 3,
+				'carousel' => 1,
+				'rand' => false,
+				'cache' => 6
+			);
+
 		$rows = array(
 			array(
 				'title' => 'Title:',
