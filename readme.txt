@@ -2,7 +2,7 @@
 Contributors: scribu
 Donate link: http://scribu.net/wordpress
 Tags: deviantart, thumbs, images
-Requires at least: 2.2
+Requires at least: 2.8
 Tested up to: 2.8
 Stable tag: 1.8.3
 
@@ -91,3 +91,8 @@ You can edit `deviant-thumbs/inc/carousel/carousel.css`.
 = Why isn't the cache working? =
 
 Probably because your wp-uploads folder isn't writable. You will have to chmod it to 757. If you don't know how, read [Changing File Permissions](http://codex.wordpress.org/Changing_File_Permissions).
+
+== Screenshots ==
+
+1. The Deviant Thumbs Carousel
+

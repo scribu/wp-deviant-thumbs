@@ -18,23 +18,18 @@ abstract class deviantThumbsCarousel
 			'after' => "</li>"
 		));
 
-		self::add_scripts($args);
+		self::$carousels[] = $args;
 
 		$thumbs = deviantThumbs::get($query, $args);
 
 		$output = "<div id='" . $args['id'] . "'><ul>\n{$thumbs}</ul></div>\n";
 
+		add_action('wp_footer', array(__CLASS__, 'add_scripts'));
+
 		return $output;
 	}
 
-	function add_scripts($args)
-	{
-		self::$carousels[] = $args;
-
-		add_action('wp_footer', array(__CLASS__, 'init_carousel'));
-	}
-
-	function init_carousel()
+	function add_scripts()
 	{
 		global $wp_scripts;
 
