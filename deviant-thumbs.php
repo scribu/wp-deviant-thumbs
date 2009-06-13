@@ -6,6 +6,7 @@ Description: Display clickable deviation thumbs from deviantART.
 Author: scribu
 Author URI: http://scribu.net/
 Plugin URI: http://scribu.net/wordpress/deviant-thumbs
+Textdomain: deviant-thumbs
 
 Copyright (C) 2008 scribu.net (scribu AT gmail DOT com)
 
@@ -26,31 +27,34 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 require_once dirname(__FILE__) . '/inc/scb-check.php';
 if ( !scb_check(__FILE__) ) return;
 
-class deviantThumbs {
-	function __construct()
+abstract class deviantThumbs 
+{
+	static $cache_dir;
+
+	function init()
 	{
 		$wud = wp_upload_dir();
-		define('DTHUMBS_CACHE_DIR', $wud['basedir'].'/deviant-thumbs');
+		self::$cache_dir = $wud['basedir'] . DIRECTORY_SEPARATOR . 'deviant-thumbs.txt';
 
-		if ( !is_dir(DTHUMBS_CACHE_DIR) )
-			@mkdir(DTHUMBS_CACHE_DIR);
+		if ( !is_dir(self::$cache_dir) )
+			@mkdir(self::$cache_dir);
 
-		register_deactivation_hook(__FILE__, array($this, 'clear_cache'));
+		register_deactivation_hook(__FILE__, array(__CLASS__, 'clear_cache'));
 	}
 
 	static function clear_cache()
 	{
-		$dir_handle = @opendir(DTHUMBS_CACHE_DIR);
+		$dir_handle = @opendir(self::$cache_dir);
 
 		if ( FALSE == $dir_handle )
 			return;
 
 		while ( $file = readdir($dir_handle) )
 			if ( $file != "." && $file != ".." )
-				unlink(DTHUMBS_CACHE_DIR."/".$file);
+				unlink(self::$cache_dir . DIRECTORY_SEPARATOR .$file);
 
 		closedir($dir_handle);
-		@rmdir(DTHUMBS_CACHE_DIR);
+		@rmdir(self::$cache_dir);
 	}
 
 	static function get($query, $args = '')
@@ -66,7 +70,7 @@ class deviantThumbs {
 		$cache *= 3600;
 
 		// Set cache file path
-		$file = DTHUMBS_CACHE_DIR . '/' . urlencode($query) . '.txt';
+		$file = self::$cache_dir . DIRECTORY_SEPARATOR . urlencode($query) . '.txt';
 
 		// Get thumbs
 		if ( file_exists($file) && (time() - filemtime($file) <= $cache) )
@@ -79,6 +83,7 @@ class deviantThumbs {
 			shuffle($thumbs);
 
 		// Wrap thumbs
+		$output = '';
 		for ( $i=0; $i<$count && $i<count($thumbs); $i++ )
 			$output .= $before . $thumbs[$i] . $after . "\n";
 
@@ -87,7 +92,7 @@ class deviantThumbs {
 
 	static function get_from_pipe($query, $count, $file)
 	{
-		require_once(ABSPATH . WPINC . '/class-snoopy.php');
+		require_once(ABSPATH . WPINC . DIRECTORY_SEPARATOR . 'class-snoopy.php');
 
 		// Set query sort
 		if ( FALSE === strpos($query, 'sort:time') && FALSE === strpos($query, 'boost:popular') )
@@ -127,12 +132,12 @@ deviant_thumbs_init();
 function deviant_thumbs_init()
 {
 	foreach ( array('carousel', 'widget', 'inline') as $file )
-		require_once(dirname(__FILE__) . "/$file.php");
+		require_once(dirname(__FILE__) . DIRECTORY_SEPARATOR . "$file.php");
 
-	new deviantThumbs();
-	new deviantThumbsInline();
+	deviantThumbs::init();
+	deviantThumbsInline::init();
 
-	dtWidget_init(__FILE__);
+	scbWidget::init('deviantThumbsWidget', __FILE__, 'deviant-thumbs');
 }
 
 // Template tag

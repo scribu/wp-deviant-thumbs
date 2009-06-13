@@ -1,6 +1,6 @@
 <?php
 
-class deviantThumbsCarousel 
+abstract class deviantThumbsCarousel 
 {
 	static $carousels = array();
 

@@ -14,7 +14,6 @@ class deviantThumbsWidget extends scbWidget
 		);
 
 		$widget_ops = array(
-			'title' => 'Deviant Thumbs',
 			'description' => 'Display thumbs from dA',
 		);
 
@@ -32,7 +31,7 @@ class deviantThumbsWidget extends scbWidget
 		// Generate content
 		if ( $carousel && class_exists('deviantThumbsCarousel') )
 			echo deviantThumbsCarousel::carousel($query, compact('count', 'rand', 'cache'));
-		else 
+		else
 		{
 			echo '<ul id="deviant-thumbs">';
 			echo deviantThumbs::get($query, compact('count', 'rand', 'cache'));
@@ -106,11 +105,5 @@ class deviantThumbsWidget extends scbWidget
 		foreach ( $rows as $row )
 			echo $this->input($row, $instance);
 	}
-}
-
-function dtWidget_init($file)
-{
-	register_activation_hook($file, create_function('', "scbWidget::migrate('deviant-thumbs');"));
-	add_action('widgets_init', create_function('', "register_widget('deviantThumbsWidget');"));
 }
 
