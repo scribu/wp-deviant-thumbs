@@ -96,3 +96,39 @@ Probably because your wp-uploads folder isn't writable. You will have to chmod i
 
 1. The Deviant Thumbs Carousel
 
+== Changelog ==
+
+= 1.8.5 =
+* WP 2.8 compatibility
+
+= 1.8 =
+* multi-widget support
+* [more info](http://scribu.net/wordpress/deviant-thumbs/dt-1-8.html)
+
+= 1.7 =
+* home-made carousel
+* [more info](http://scribu.net/wordpress/deviant-thumbs/dt-1-7.html)
+
+= 1.6 =
+* inline thumbs
+* [more info](http://scribu.net/wordpress/deviant-thumbs/dt-1-6.html)
+
+= 1.5 =
+* switched to jCarousel Lite
+
+= 1.4 =
+* deviantART v6 skin
+
+= 1.3 =
+* jCarousel
+
+= 1.2 =
+* use any query
+* file-based caching
+
+= 1.1 =
+* random thumbs
+
+= 1.0 =
+* initial release
+
