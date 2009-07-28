@@ -33,7 +33,7 @@ abstract class deviantThumbsCarousel
 	{
 		global $wp_scripts;
 
-		$carousel_url = self::get_plugin_url() . '/inc/carousel';
+		$carousel_url = self::get_plugin_url() . '/inc';
 
 		$scriptf = "\n<script language='javascript' type='text/javascript' src='%s'></script>";
 

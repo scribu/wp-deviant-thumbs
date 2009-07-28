@@ -24,6 +24,22 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
+// Init
+_deviant_thumbs_init();
+function _deviant_thumbs_init()
+{
+	// Load scbFramework
+	require_once dirname(__FILE__) . '/scb/load.php';
+
+	foreach ( array('carousel', 'widget', 'inline') as $file )
+		require_once dirname(__FILE__) . "/$file.php";
+
+	deviantThumbs::init();
+	deviantThumbsInline::init();
+
+	scbWidget::init('deviantThumbsWidget', __FILE__, 'deviant-thumbs');
+}
+
 abstract class deviantThumbs 
 {
 	static $cache_dir;
@@ -121,23 +137,6 @@ abstract class deviantThumbs
 
 		return $thumbs;
 	}
-}
-
-// Init
-deviant_thumbs_init();
-
-function deviant_thumbs_init()
-{
-	// Load scbFramework
-	require_once dirname(__FILE__) . '/inc/scb/load.php';
-
-	foreach ( array('carousel', 'widget', 'inline') as $file )
-		require_once dirname(__FILE__) . "/$file.php";
-
-	deviantThumbs::init();
-	deviantThumbsInline::init();
-
-	scbWidget::init('deviantThumbsWidget', __FILE__, 'deviant-thumbs');
 }
 
 // Template tag
