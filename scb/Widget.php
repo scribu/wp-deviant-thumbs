@@ -50,7 +50,14 @@ abstract class scbWidget extends WP_Widget
 		// Then add prefix to names and formdata
 		$new_formdata = array();
 		foreach ( (array) $args['name'] as $name )
-			$new_formdata[ $this->get_field_name($name) ] = $formdata[$name];
+		{
+			if ( false !== strpos($name, '[') )
+				$newname = str_replace('[]', '', $this->get_field_name('')) . str_replace('[]', '', $name) . '[]';
+			else
+				$newname = $this->get_field_name($name);
+
+			$new_formdata[ $newname ] = $formdata[$name];
+		}
 		$new_names = array_keys($new_formdata);
 
 		// Finally, replace the old names

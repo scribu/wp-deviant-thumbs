@@ -153,7 +153,12 @@ class scbForms
 	// From multiple inputs to single inputs
 	private static function _input($args, $formdata)
 	{
-		extract($args, EXTR_SKIP);
+		extract(wp_parse_args($args, array(
+			'name' => NULL,
+			'value' => NULL,
+			'desc' => NULL,
+			'checked' => NULL,
+		)), EXTR_SKIP);
 
 		// Expand names or values
 		if ( !is_array($name) && !is_array($value) )
@@ -181,7 +186,8 @@ class scbForms
 
 		// Set constant args
 		$const_args = self::array_slice_assoc($args, array('type', 'desc_pos', 'checked'));
-		$const_args['extra'] = explode(' ', $extra);
+		if ( isset($extra) )
+			$const_args['extra'] = explode(' ', $extra);
 
 		$i = 0;
 		foreach ( $a as $name => $val )
@@ -201,9 +207,14 @@ class scbForms
 				$cur_args['desc'] = $desc;
 
 			// Find relevant formdata
-			$match = @$formdata[str_replace('[]', '', $$i1)];
-			if ( is_array($match) )
-				$match = $match[$i];
+			if ( $checked === NULL )
+			{
+				$match = @$formdata[str_replace('[]', '', $$i1)];
+				if ( is_array($match) )
+					$match = $match[$i];
+			}
+			else if ( is_array($checked) )
+				$cur_args['checked'] = $checked[$i];
 
 			$output[] = self::$func($cur_args, $match);
 
@@ -262,7 +273,11 @@ class scbForms
 	// Generate html with the final args
 	function _input_gen($args)
 	{
-		extract($args, EXTR_SKIP);
+		extract(wp_parse_args($args, array(
+			'name' => NULL,
+			'value' => NULL,
+			'desc' => NULL,
+		)), EXTR_SKIP);
 
 		$extra = implode(' ', $extra);
 
@@ -282,7 +297,7 @@ class scbForms
 		$label = trim(str_replace(self::$token, $input, $label));
 
 		// Add label
-		if ( empty($label) )
+		if ( empty($label) || $desc === false )
 			$output = $input . "\n";
 		else
 			$output = "<label>{$label}</label>\n";
@@ -308,6 +323,9 @@ class scbForms
 		if ( !is_array($value) )
 			return trigger_error("Second argument is expected to be an array", E_USER_WARNING);
 
+		if ( empty($value) )
+			$value = array('' => '');
+
 		if ( !self::is_associative($value) && !$numeric )
 			$value = array_combine($value, $value);
 
@@ -323,6 +341,9 @@ class scbForms
 
 		foreach ( $value as $key => $value )
 		{
+			if ( empty($key) && empty($value) )
+				continue;
+
 			$cur_extra = array();
 			if ( $key == $cur_val )
 				$cur_extra[] = "selected='selected'";

@@ -31,7 +31,7 @@ abstract class deviantThumbs
 	function init()
 	{
 		$wud = wp_upload_dir();
-		self::$cache_dir = $wud['basedir'] . DIRECTORY_SEPARATOR . 'deviant-thumbs.txt';
+		self::$cache_dir = $wud['basedir'] . DIRECTORY_SEPARATOR . 'deviant-thumbs';
 
 		if ( !is_dir(self::$cache_dir) )
 			@mkdir(self::$cache_dir);
