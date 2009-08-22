@@ -98,6 +98,9 @@ Probably because your wp-uploads folder isn't writable. You will have to chmod i
 
 == Changelog ==
 
+= 1.8.6 =
+* fix error when retrieving thumb list
+
 = 1.8.5 =
 * WP 2.8 compatibility
 

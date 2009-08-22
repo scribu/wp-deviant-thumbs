@@ -1,7 +1,7 @@
 <?php
 /*
 Plugin Name: Deviant Thumbs
-Version: 1.8.5
+Version: 1.8.6
 Description: Display clickable deviation thumbs from deviantART.
 Author: scribu
 Author URI: http://scribu.net/
@@ -115,17 +115,13 @@ abstract class deviantThumbs
 		$pipeurl  = 'http://pipes.yahoo.com/pipes/pipe.run?_id=627f77f83f199773c5ce8a150a1e5977&_render=php';
 		$pipeurl .= '&query=' . urlencode($query);
 
-		// Fetch pipe content
-		$snoop = new Snoopy();
-		$snoop->fetch($pipeurl);
+		$data = unserialize(wp_remote_retrieve_body(wp_remote_get($pipeurl)));
 
-		if ( $snoop->error )
+		if ( !$data )
 		{
-			trigger_error($snoop->error, E_USER_WARNING);
-			return FALSE;
+			trigger_error('Error while retrieving thumb list', E_USER_WARNING);
+			return false;
 		}
-
-		$data = unserialize($snoop->results);
 
 		// Extract thumb list
 		$thumbs_nr = count($data['value']['items']);

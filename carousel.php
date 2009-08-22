@@ -33,14 +33,14 @@ abstract class deviantThumbsCarousel
 	{
 		global $wp_scripts;
 
-		$carousel_url = self::get_plugin_url() . '/inc';
+		$carousel_url = plugin_dir_url(__FILE__) . 'inc/';
 
 		$scriptf = "\n<script language='javascript' type='text/javascript' src='%s'></script>";
 
 		if ( ! @in_array('jquery', $wp_scripts->done) )
 			$code[] = sprintf($scriptf, get_option('siteurl') . "/wp-includes/js/jquery/jquery.js");
 
-		$code[] = sprintf($scriptf, $carousel_url . '/carousel.js');
+		$code[] = sprintf($scriptf, $carousel_url . 'carousel.js');
 
 		echo "\n<!--Deviant Thumbs Carousel [begin]-->";
 		echo implode('', $code);
@@ -52,21 +52,24 @@ abstract class deviantThumbsCarousel
 		}
 
 		echo "\n<script language='javascript' type='text/javascript'>\n";
-		echo "include_css('" . $carousel_url . "/carousel.css');\n";
+		echo "include_css('" . $carousel_url . "carousel.css');\n";
 		echo "jQuery(window).load(function() {\n" . implode("\n", $code) . "\n});\n";
 		echo "</script>";
 		echo "\n<!--Deviant Thumbs Carousel [end]-->";
 	}
-
-	function get_plugin_url()
-	{
-		if ( function_exists('plugins_url') )
-			return plugins_url(plugin_basename(dirname(__FILE__)));
-
-		// WP < 2.6
-		return get_bloginfo('url') . '/wp-content/plugins/' . plugin_basename(dirname(__FILE__));
-	}
 }
+
+// WP < 2.8
+if ( !function_exists('plugin_dir_url') ) :
+function plugin_dir_url($file) 
+{
+	// WP < 2.6
+	if ( !function_exists('plugins_url') )
+		return trailingslashit(get_option('siteurl') . '/wp-content/plugins/' . plugin_basename($file));
+
+	return trailingslashit(plugins_url(plugin_basename(dirname($file))));
+}
+endif;
 
 // Template tag
 function deviant_thumbs_carousel($query, $args = '')
