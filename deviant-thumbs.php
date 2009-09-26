@@ -105,8 +105,6 @@ abstract class deviantThumbs
 
 	static function get_from_pipe($query, $count, $file)
 	{
-		require_once(ABSPATH . WPINC . DIRECTORY_SEPARATOR . 'class-snoopy.php');
-
 		// Set query sort
 		if ( FALSE === strpos($query, 'sort:time') && FALSE === strpos($query, 'boost:popular') )
 			$query = 'sort:time ' . $query;

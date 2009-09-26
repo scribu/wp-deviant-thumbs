@@ -75,6 +75,12 @@ These are meant to be used outside The Loop.
 
 == Frequently Asked Questions ==
 
+= "Parse error: syntax error, unexpected T_CLASS..." Help! =
+
+Make sure your new host is running PHP 5. Add this line to wp-config.php:
+
+`var_dump(PHP_VERSION);`
+
 = How can I choose which thumbs to display? =
 
 You enter a search string (the thumbs are found using the search engine from deviantArt). You can read more about [search options](http://help.deviantart.com/577/) there.

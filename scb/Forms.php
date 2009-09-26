@@ -359,7 +359,7 @@ class scbForms
 			$opts = '';
 		else
 		{
-			$opts = "\t<option";
+			$opts = "\t<option value=''";
 			if ( $cur_val === array('foo') )
 				$opts .= " selected='selected'";
 			$opts .= ">{$text}</option>\n";
@@ -372,9 +372,11 @@ class scbForms
 
 			$cur_extra = array();
 			if ( $key == $cur_val )
-				$cur_extra[] = " selected='selected'";
+				$cur_extra[] = "selected='selected'";
 
 			$cur_extra = implode(' ', $cur_extra);
+			if ( !empty($cur_extra) )
+				$cur_extra = ' ' . $cur_extra;
 
 			$opts .= "\t<option value='{$key}'{$cur_extra}>{$value}</option>\n";
 		}
@@ -448,14 +450,6 @@ class scbForms
 		echo "</pre><br />";
 	}
 }
-
-// WP < 2.8
-if ( !function_exists('esc_html') ) :
-function esc_html($text)
-{
-	return wp_specialchars($text, ENT_QUOTES);
-}
-endif;
 
 // PHP < 5.2
 if ( !function_exists('array_fill_keys') ) :
