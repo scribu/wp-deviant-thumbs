@@ -1,7 +1,7 @@
 <?php
 /*
 Plugin Name: Deviant Thumbs
-Version: 1.8.6
+Version: 1.9
 Description: Display clickable deviation thumbs from deviantART.
 Author: scribu
 Author URI: http://scribu.net/
@@ -42,94 +42,69 @@ function _deviant_thumbs_init()
 
 abstract class deviantThumbs 
 {
-	static $cache_dir;
-
 	function init()
 	{
-		$wud = wp_upload_dir();
-		self::$cache_dir = $wud['basedir'] . DIRECTORY_SEPARATOR . 'deviant-thumbs';
-
-		if ( !is_dir(self::$cache_dir) )
-			@mkdir(self::$cache_dir);
-
-		register_deactivation_hook(__FILE__, array(__CLASS__, 'clear_cache'));
-	}
-
-	static function clear_cache()
-	{
-		$dir_handle = @opendir(self::$cache_dir);
-
-		if ( FALSE == $dir_handle )
-			return;
-
-		while ( $file = readdir($dir_handle) )
-			if ( $file != "." && $file != ".." )
-				unlink(self::$cache_dir . DIRECTORY_SEPARATOR . $file);
-
-		closedir($dir_handle);
-		@rmdir(self::$cache_dir);
 	}
 
 	static function get($query, $args = '')
 	{
 		extract(wp_parse_args($args, array(
-			'count' => 6,
-			'rand'  => true,
-			'before' => '<li>',
-			'after' => '</li>',
-			'cache' => 6
+			'count' => 6, 'rand'  => true,
+			'before' => '<li>', 'after' => '</li>',
 		)));
 
-		$cache *= 3600;
-
-		// Set cache file path
-		$file = self::$cache_dir . DIRECTORY_SEPARATOR . urlencode($query) . '.txt';
-
-		// Get thumbs
-		if ( file_exists($file) && (time() - filemtime($file) <= $cache) )
-			$thumbs = explode("\n", file_get_contents($file));
-		else
-			$thumbs = deviantThumbs::get_from_pipe($query, $count, $file);
-
-		// Randomize thumbs
-		if ( $rand )
-			shuffle($thumbs);
+		$thumbs = deviantThumbs::remote_get($query, $count, $rand);
 
 		// Wrap thumbs
 		$output = '';
-		for ( $i=0; $i<$count && $i<count($thumbs); $i++ )
-			$output .= $before . $thumbs[$i] . $after . "\n";
+		foreach ( $thumbs as $thumb )
+			$output .= $before . $thumb . $after . "\n";
 
 		return $output;
 	}
 
-	static function get_from_pipe($query, $count, $file)
+	static function remote_get($query, $count, $rand)
 	{
 		// Set query sort
 		if ( FALSE === strpos($query, 'sort:time') && FALSE === strpos($query, 'boost:popular') )
 			$query = 'sort:time ' . $query;
 
-		// Set pipeurl
-		$pipeurl  = 'http://pipes.yahoo.com/pipes/pipe.run?_id=627f77f83f199773c5ce8a150a1e5977&_render=php';
-		$pipeurl .= '&query=' . urlencode($query);
+		// Set feed url
+		$url  = add_query_arg('q', $query, 'http://backend.deviantart.com/rss.xml?type=deviation');
 
-		$data = unserialize(wp_remote_retrieve_body(wp_remote_get($pipeurl)));
+		add_filter('wp_feed_cache_transient_lifetime', array(__CLASS__, '_cache_time'));
+		$rss = fetch_feed($url);
+		remove_filter('wp_feed_cache_transient_lifetime', array(__CLASS__, '_cache_time'));
 
-		if ( !$data )
+		if ( ! $rss )
 		{
 			trigger_error('Error while retrieving thumb list', E_USER_WARNING);
 			return false;
 		}
 
-		// Extract thumb list
-		$thumbs_nr = count($data['value']['items']);
-		for ( $i=0; $i<$thumbs_nr; $i++ )
-			$thumbs[] = str_replace(' rel="nofollow" target="_blank"', '', $data['value']['items'][$i]['content']);
+		$keys = range(0, $rss->get_item_quantity());
 
-		// Put thumbs in cache
-		@file_put_contents($file, implode("\n", $thumbs));
+		if ( $rand )
+			shuffle($keys);
+
+		$thumbs = array();
+		foreach ( array_slice($keys, 0, $count) as $i )
+		{
+			$item = $rss->get_item($i);
+
+			$title = $item->get_title();
+			$link = $item->get_permalink();
+			$src = $item->get_enclosure(1)->get_thumbnail(1);
+
+			$thumbs[] = "<a title='$title' href='$link'><img src='$src' /></a>";
+		}
 
 		return $thumbs;
+	}
+
+	static function _cache_time()
+	{
+		return 3600;
 	}
 }
 

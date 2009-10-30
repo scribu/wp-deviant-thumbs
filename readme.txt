@@ -1,6 +1,6 @@
 === Deviant Thumbs ===
 Contributors: scribu
-Donate link: http://scribu.net/wordpress
+Donate link: http://scribu.net/paypal
 Tags: deviantart, thumbs, images
 Requires at least: 2.8
 Tested up to: 2.9-rare
@@ -92,17 +92,20 @@ You enter a search string (the thumbs are found using the search engine from dev
 
 = How can I modifify the carousel skin? =
 
-You can edit `deviant-thumbs/inc/carousel/carousel.css`.
+Copy the CSS from `deviant-thumbs/inc/carousel/carousel.css` into your theme's style.css and modify it there.
 
-= Why isn't the cache working? =
+This should override the default skin appearance.
 
-Probably because your wp-uploads folder isn't writable. You will have to chmod it to 757. If you don't know how, read [Changing File Permissions](http://codex.wordpress.org/Changing_File_Permissions).
 
 == Screenshots ==
 
 1. The Deviant Thumbs Carousel
 
 == Changelog ==
+
+= 1.9 =
+* don't use Yahoo! Pipes anymore
+* remove file cache
 
 = 1.8.6 =
 * fix error when retrieving thumb list

@@ -10,7 +10,6 @@ class deviantThumbsWidget extends scbWidget
 			'count' => 3,
 			'carousel' => 1,
 			'rand' => false,
-			'cache' => 6
 		);
 
 		$widget_ops = array(
@@ -93,12 +92,6 @@ class deviantThumbsWidget extends scbWidget
 				'title' => 'Show as a carousel',
 				'name' => 'carousel',
 				'type' => 'checkbox',
-			),
-			array(
-				'title' => 'Update cache every %input% hours.',
-				'name' => 'cache',
-				'type' => 'text',
-				'extra' => 'class="widefat" style="width: 24px; text-align:right"'
 			)
 		);
 
