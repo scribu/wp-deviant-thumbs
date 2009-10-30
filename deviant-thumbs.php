@@ -64,7 +64,7 @@ abstract class deviantThumbs
 
 		while ( $file = readdir($dir_handle) )
 			if ( $file != "." && $file != ".." )
-				unlink(self::$cache_dir . DIRECTORY_SEPARATOR .$file);
+				unlink(self::$cache_dir . DIRECTORY_SEPARATOR . $file);
 
 		closedir($dir_handle);
 		@rmdir(self::$cache_dir);
