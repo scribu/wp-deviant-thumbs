@@ -77,7 +77,7 @@ These are meant to be used outside The Loop.
 
 = "Parse error: syntax error, unexpected T_CLASS..." Help! =
 
-Make sure your new host is running PHP 5. Add this line to wp-config.php:
+Make sure your host is running PHP 5. Add this line to wp-config.php to make sure:
 
 `var_dump(PHP_VERSION);`
 
