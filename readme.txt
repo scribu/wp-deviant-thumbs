@@ -103,8 +103,11 @@ This should override the default skin appearance.
 
 == Changelog ==
 
+= 1.9.1 =
+* ignore items that don't have thumbnails
+
 = 1.9 =
-* don't use Yahoo! Pipes anymore
+* don't use Yahoo Pipes anymore
 * remove file cache
 
 = 1.8.6 =
