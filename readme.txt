@@ -109,6 +109,7 @@ This should override the default skin appearance.
 = 1.9 =
 * don't use Yahoo Pipes anymore
 * remove file cache
+* [more info](http://scribu.net/wordpress/deviant-thumbs/dt-1-9.html)
 
 = 1.8.6 =
 * fix error when retrieving thumb list
