@@ -1,7 +1,7 @@
 <?php
 /*
 Plugin Name: Deviant Thumbs
-Version: 1.9.1
+Version: 1.9.2b
 Description: Display clickable deviation thumbs from deviantART.
 Author: scribu
 Author URI: http://scribu.net/
@@ -97,14 +97,18 @@ abstract class deviantThumbs
 
 			$title = $item->get_title();
 			$link = $item->get_permalink();
-			
-			if ( ! $enclosure = $item->get_enclosure(1) )
+
+#			if ( ! $enclosure = $item->get_enclosure(1) )
+#				continue;
+#			$src = $enclosure->get_thumbnail(1);
+
+			$src = $item->data['child']['http://search.yahoo.com/mrss/']['thumbnail'][1]['attribs']['']['url'];
+
+			if ( ! $src )
 				continue;
 
-			$src = $enclosure->get_thumbnail(1);
-
 			$thumbs[] = "<a title='$title' href='$link'><img src='$src' /></a>";
-			
+
 			$i++;
 		}
 

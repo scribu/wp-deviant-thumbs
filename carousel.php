@@ -11,8 +11,6 @@ abstract class deviantThumbsCarousel
 			'show' => 3,
 			'rand'  => true,
 			'speed' => 'fast',
-			'cache' => 6,
-
 			'id' => sanitize_title_with_dashes($query),
 			'before' => "\t\t<li>",
 			'after' => "</li>"
@@ -58,18 +56,6 @@ abstract class deviantThumbsCarousel
 		echo "\n<!--Deviant Thumbs Carousel [end]-->";
 	}
 }
-
-// WP < 2.8
-if ( !function_exists('plugin_dir_url') ) :
-function plugin_dir_url($file) 
-{
-	// WP < 2.6
-	if ( !function_exists('plugins_url') )
-		return trailingslashit(get_option('siteurl') . '/wp-content/plugins/' . plugin_basename($file));
-
-	return trailingslashit(plugins_url(plugin_basename(dirname($file))));
-}
-endif;
 
 // Template tag
 function deviant_thumbs_carousel($query, $args = '')
