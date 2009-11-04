@@ -111,6 +111,9 @@ abstract class deviantThumbs
 
 			$i++;
 		}
+		
+		$rss->__destruct();
+		unset($rss);
 
 		return $thumbs;
 	}
