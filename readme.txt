@@ -4,7 +4,7 @@ Donate link: http://scribu.net/paypal
 Tags: deviantart, thumbs, images
 Requires at least: 2.8
 Tested up to: 2.9-rare
-Stable tag: 1.9.1
+Stable tag: trunk
 
 Display deviantART thumbnails on your blog.
 
@@ -102,6 +102,9 @@ This should override the default skin appearance.
 1. The Deviant Thumbs Carousel
 
 == Changelog ==
+
+= 1.9.2 =
+* prevent potential memory leak
 
 = 1.9.1 =
 * ignore items that don't have thumbnails
