@@ -26,8 +26,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 // Init
 _deviant_thumbs_init();
-function _deviant_thumbs_init()
-{
+function _deviant_thumbs_init() {
 	// Load scbFramework
 	require_once dirname(__FILE__) . '/scb/load.php';
 
@@ -40,14 +39,8 @@ function _deviant_thumbs_init()
 	scbWidget::init('deviantThumbsWidget', __FILE__, 'deviant-thumbs');
 }
 
-abstract class deviantThumbs 
-{
-	function init()
-	{
-	}
-
-	static function get($query, $args = '')
-	{
+abstract class deviantThumbs {
+	static function get($query, $args = '') {
 		extract(wp_parse_args($args, array(
 			'count' => 6, 'rand'  => true,
 			'before' => '<li>', 'after' => '</li>',
@@ -63,8 +56,7 @@ abstract class deviantThumbs
 		return $output;
 	}
 
-	static function remote_get($query, $count, $rand)
-	{
+	static function remote_get($query, $count, $rand) {
 		// Set query sort
 		if ( FALSE === strpos($query, 'sort:time') && FALSE === strpos($query, 'boost:popular') )
 			$query = 'sort:time ' . $query;
@@ -76,8 +68,7 @@ abstract class deviantThumbs
 		$rss = fetch_feed($url);
 		remove_filter('wp_feed_cache_transient_lifetime', array(__CLASS__, '_cache_time'));
 
-		if ( ! $rss )
-		{
+		if ( ! $rss ) {
 			trigger_error('Error while retrieving thumb list', E_USER_WARNING);
 			return false;
 		}
@@ -90,8 +81,7 @@ abstract class deviantThumbs
 		$thumbs = array();
 
 		$i = 0;
-		while ( $i < $count )
-		{
+		while ( $i < $count ) {
 			if ( ! $item = $rss->get_item($keys[$i]) )
 				continue;
 
@@ -118,15 +108,13 @@ abstract class deviantThumbs
 		return $thumbs;
 	}
 
-	static function _cache_time()
-	{
+	static function _cache_time() {
 		return 3600;
 	}
 }
 
 // Template tag
-function deviant_thumbs($query, $args = '')
-{
+function deviant_thumbs($query, $args = '') {
 	echo deviantThumbs::get($query, $args);
 }
 

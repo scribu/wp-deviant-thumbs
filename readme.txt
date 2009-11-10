@@ -16,7 +16,7 @@ Display linked thumbnails from deviantART on your WordPress blog.
 
 * **Scrollable carousel**: your thumbs can be displayed in a dA style carousel
 * **Inline deviations**: the code *:thumb98765:* inside a post becomes a thumbnail, just like on dA
-* **Multiple widget support** 
+* **Multiple widget support**
 * **Flexible template tags**
 
 == Installation ==

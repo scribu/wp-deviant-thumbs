@@ -1,11 +1,9 @@
 <?php
 
-abstract class deviantThumbsCarousel 
-{
+abstract class deviantThumbsCarousel {
 	static $carousels = array();
 
-	function carousel($query, $args = '')
-	{
+	function carousel($query, $args = '') {
 		$args = wp_parse_args($args, array(
 			'count' => 6,
 			'show' => 3,
@@ -27,8 +25,7 @@ abstract class deviantThumbsCarousel
 		return $output;
 	}
 
-	function add_scripts()
-	{
+	function add_scripts() {
 		global $wp_scripts;
 
 		$carousel_url = plugin_dir_url(__FILE__) . 'inc/';
@@ -58,8 +55,7 @@ abstract class deviantThumbsCarousel
 }
 
 // Template tag
-function deviant_thumbs_carousel($query, $args = '')
-{
+function deviant_thumbs_carousel($query, $args = '') {
 	echo deviantThumbsCarousel::carousel($query, $args);
 }
 

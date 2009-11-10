@@ -1,9 +1,7 @@
 <?php
 
-class deviantThumbsWidget extends scbWidget
-{
-	function deviantThumbsWidget()
-	{
+class deviantThumbsWidget extends scbWidget {
+	function deviantThumbsWidget() {
 		$this->defaults = array(
 			'query' => 'by:',
 			'scraps' => false,
@@ -19,27 +17,25 @@ class deviantThumbsWidget extends scbWidget
 		$this->WP_Widget('deviant-thumbs', 'Deviant Thumbs', $widget_ops);
 	}
 
-	function content($instance)
-	{
+	function content($instance) {
 		extract($instance);
 
 		$remove_scraps = '-in:scraps';
+
 		if ( !$scraps && FALSE === strpos($query, $remove_scraps) )
 			$query .= " $remove_scraps";
 
 		// Generate content
-		if ( $carousel && class_exists('deviantThumbsCarousel') )
+		if ( $carousel && class_exists('deviantThumbsCarousel') ) {
 			echo deviantThumbsCarousel::carousel($query, compact('count', 'rand', 'cache'));
-		else
-		{
+		} else {
 			echo '<ul id="deviant-thumbs">';
 			echo deviantThumbs::get($query, compact('count', 'rand', 'cache'));
 			echo '</ul>';
 		}
 	}
 
-	function update($new_instance, $old_instance)
-	{
+	function update($new_instance, $old_instance) {
 		if ( !isset($new_instance['title']) ) // user clicked cancel
 				return false;
 
@@ -55,8 +51,7 @@ class deviantThumbsWidget extends scbWidget
 		return $instance;
 	}
 
-	function form($instance)
-	{
+	function form($instance) {
 		if ( empty($instance) )
 			$instance = $this->defaults;
 
