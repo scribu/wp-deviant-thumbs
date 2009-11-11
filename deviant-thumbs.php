@@ -33,7 +33,6 @@ function _deviant_thumbs_init() {
 	foreach ( array('carousel', 'widget', 'inline') as $file )
 		require_once dirname(__FILE__) . "/$file.php";
 
-	deviantThumbs::init();
 	deviantThumbsInline::init();
 
 	scbWidget::init('deviantThumbsWidget', __FILE__, 'deviant-thumbs');
