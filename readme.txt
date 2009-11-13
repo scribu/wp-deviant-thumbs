@@ -4,7 +4,7 @@ Donate link: http://scribu.net/paypal
 Tags: deviantart, thumbs, images
 Requires at least: 2.8
 Tested up to: 2.9-rare
-Stable tag: trunk
+Stable tag: 1.8.6
 
 Display deviantART thumbnails on your blog.
 
