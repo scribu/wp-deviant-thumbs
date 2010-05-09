@@ -3,42 +3,56 @@
 // Adds compatibility methods between WP_Widget and scbForms
 
 abstract class scbWidget extends WP_Widget {
-	private static $widgets = array();
-	private static $migrations = array();
+	protected $defaults = array();
 
+	private static $scb_widgets = array();
+
+	static function init($class, $file = '', $base = '') {
+		self::$scb_widgets[] = $class;
+
+		add_action('widgets_init', array(__CLASS__, '_scb_register'));
+
+		// for auto-uninstall
+		if ( $file && $base && class_exists('scbOptions') )
+			new scbOptions("widget_$base", $file);
+	}
+
+	static function _scb_register() {
+		foreach ( self::$scb_widgets as $widget )
+			register_widget($widget);
+	}
+
+	// A pre-filled method, for convenience
 	function widget($args, $instance) {
+		$instance = wp_parse_args($instance, $this->defaults);
+
 		extract($args);
 
 		echo $before_widget;
 
-		if ( !empty($instance['title']) )
-			echo $before_title . $instance['title'] . $after_title;
+		$title = apply_filters('widget_title', isset($instance['title']) ? $instance['title'] : '', $instance, $this->id_base);
+
+		if ( ! empty($title) )
+			echo $before_title . $title . $after_title;
 
 		$this->content($instance);
 
 		echo $after_widget;
 	}
 
+	// This is where the actual widget content goes
 	function content($instance) {}
 
-	static function init($class, $file = '', $base = '') {
-		self::$widgets[] = $class;
-		self::$migrations[] = $base;
 
-		add_action('widgets_init', array(__CLASS__, 'scb_register'));
-		register_activation_hook($file, array(__CLASS__, 'scb_migrate'));
-	}
-
-
-// ____HELPER METHODS____
+//_____HELPER METHODS_____
 
 
 	// See scbForms::input()
 	// Allows extra parameter $args['title']
-	function input($args, $formdata = array()) {
+	protected function input($args, $formdata = array()) {
 		// Add default class
 		if ( !isset($args['extra']) )
-			$args['extra'] = 'class="widefat"';
+			$args['extra'] = 'class="regular-text"';
 
 		// Add default label position
 		if ( !in_array($args['type'], array('checkbox', 'radio')) && empty($args['desc_pos']) )
@@ -46,14 +60,8 @@ abstract class scbWidget extends WP_Widget {
 
 		// Then add prefix to names and formdata
 		$new_formdata = array();
-		foreach ( (array) $args['name'] as $name ) {
-			if ( false !== strpos($name, '[') )
-				$newname = str_replace('[]', '', $this->get_field_name('')) . str_replace('[]', '', $name) . '[]';
-			else
-				$newname = $this->get_field_name($name);
-
-			$new_formdata[ $newname ] = $formdata[$name];
-		}
+		foreach ( (array) $args['name'] as $name )
+			$new_formdata[$this->scb_get_field_name($name)] = @$formdata[$name];
 		$new_names = array_keys($new_formdata);
 
 		// Finally, replace the old names
@@ -63,10 +71,13 @@ abstract class scbWidget extends WP_Widget {
 			$args['name'] = $new_names;
 
 		// Remember $desc and replace with $title
-		if ( $args['desc'] )
-			$desc = "<small>{$args['desc']}</small>";
-		$args['desc'] = $args['title'];
-		unset($args['title']);
+		$desc = '';
+		if ( isset($args['title']) ) {
+			if ( isset($args['desc']) )
+				$desc = "<small>{$args['desc']}</small>";
+			$args['desc'] = $args['title'];
+			unset($args['title']);
+		}
 
 		$input = scbForms::input($args, $new_formdata);
 
@@ -74,46 +85,16 @@ abstract class scbWidget extends WP_Widget {
 	}
 
 
-// ____________PRIVATE METHODS____________
+//_____INTERNAL METHODS_____
 
 
-	static function scb_register() {
-		foreach ( self::$widgets as $widget )
-			register_widget($widget);
-	}
+	private function scb_get_field_name($name) {
+		if ( $split = scbUtil::split_at('[', $name) )
+			list($basename, $extra) = $split;
+		else
+			return $this->get_field_name($name);
 
-	static function scb_migrate() {
-		foreach ( self::$migrations as $base )
-			self::migrate($base);
-	}
-
-	// Migrate from old scbWidget to WP_Widget
-	private static function migrate($base) {
-		$old_base = 'multiwidget_' . $base;
-		$new_base = 'widget_' . $base;
-
-		if ( ! $old = get_option($old_base) )
-			return;
-
-		foreach ( $old as $widget ) {
-			if ( ! $id = $widget['__multiwidget'] )
-				continue;
-			unset($widget['__multiwidget']);
-
-			$migrated[$id] = $widget;
-		}
-
-		$widgets = get_option('sidebars_widgets');
-
-		foreach ( array_keys($migrated) as $key )
-			$widgets['wp_inactive_widgets'][] = $base . '-' . $key;
-
-		update_option('sidebars_widgets', $widgets);
-
-		$migrated['_multiwidget'] = 1;
-
-		update_option($new_base, $migrated);
-		delete_option($old_base);
+		return str_replace('[]', '', $this->get_field_name($basename)) . $extra;
 	}
 }
 

@@ -1,5 +1,7 @@
 <?php
-abstract class deviantThumbsInline {
+
+class deviantThumbsInline {
+
 	function init() {
 		add_filter('the_content', array(__CLASS__, 'inline'));
 	}
@@ -12,3 +14,4 @@ abstract class deviantThumbsInline {
 		return preg_replace($pattern, $replacement, $post);
 	}
 }
+

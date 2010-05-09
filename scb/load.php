@@ -1,92 +1,69 @@
 <?php
-/*
-You can use this code to autoload the most recent version of scbFramework available.
-This has the advantage that the user is not required to install scbFramework as a separate plugin,
-but it has several disadvantages:
-- you have to include the class files with each plugin
-- you will have to update the framework manually
+if ( !class_exists('scbLoad3') ) :
+class scbLoad3 {
 
-To autoload the classes, you just need to require the file, like so:
+	private static $candidates;
+	private static $loaded;
+	private static $initial_load;
 
-	require_once dirname(__FILE__) . '/scb/load.php';
+	static function init($rev, $file, $classes) {
+		if ( $path = get_option('scb-framework') && !self::$initial_load ) {
+			if ( $path != __FILE__ )
+				include $path;
 
-This file needs to be in the same directory as the class files.
-*/
+			self::$initial_load = true;
+		}
 
-if ( class_exists('scbFramework') ) return;	// Then standalone plugin is installed
+		self::$candidates[$file] = $rev;
 
-if ( !class_exists('scbLoad') ) :
-class scbLoad
-{
-	private $data;
+		self::load(dirname($file) . '/', $classes);
 
-	function __construct($file, $rev)
-	{
-		$this->data = array(
-			'rev' => $rev,
-			'path' => dirname($file),
-		);
-
-		$this->set_path();
-		$this->set_autoload();
+		add_action('deactivate_plugin', array(__CLASS__, 'deactivate'));
+		add_action('update_option_active_plugins', array(__CLASS__, 'reorder'));
 	}
 
-	function set_path()
-	{
-		$data = get_option('scbFramework');
+	static function deactivate($plugin) {
+		$plugin = dirname($plugin);
 
-		if ( empty($data) or $data['rev'] < $this->data['rev'] or !is_dir($data['path']) )
-			update_option('scbFramework', $this->data);
+		if ( '.' == $plugin )
+			return;
+
+		foreach ( self::$candidates as $path => $rev )
+			if ( plugin_basename(dirname(dirname($path))) == $plugin )
+				unset(self::$candidates[$path]);
 	}
 
-	static function get_path()
-	{
-		$data = get_option('scbFramework');
+	static function reorder() {
+		arsort(self::$candidates);
 
-		return $data['path'];
+		update_option('scb-framework', key(self::$candidates));
 	}
 
-	function set_autoload()
-	{
-		if ( function_exists('spl_autoload_register') )
-			spl_autoload_register(array($this, 'autoload'));
-		else
-			// Load all classes manually (PHP < 5.1)
-			foreach ( array('scbForms', 'scbOptions', 'scbWidget', 'scbCron',
-				'scbAdminPage', 'scbBoxesPage', 'scbTable', 'scbDependency') as $class )
-				$this->autoload($class);
+	private static function load($path, $classes) {
+		foreach ( $classes as $class_name ) {
+			if ( class_exists($class_name) )
+				continue;
+
+			$fpath = $path . substr($class_name, 3) . '.php';
+
+			if ( file_exists($fpath) ) {
+				self::$loaded[$class_name] = $fpath;
+				include $fpath;
+			}
+		}
 	}
 
-	function autoload($className)
-	{
-		if ( class_exists($className) )
-			return false;
+	static function get_info() {
+		arsort(self::$candidates);
 
-		if ( substr($className, 0, 3) != 'scb' )
-			return false;
-
-		$fname = self::get_file_path($className);
-
-		if ( ! @file_exists($fname) )
-			$fname = self::get_file_path($className, $this->data['path']);
-
-		if ( ! @file_exists($fname) )
-			return false;
-
-		include_once($fname);
-
-		return true;
-	}
-
-	static function get_file_path($className, $base = '')
-	{
-		if ( empty($base) )
-			$base = self::get_path();
-
-		return $base . DIRECTORY_SEPARATOR . substr($className, 3) . '.php';
+		return array(get_option('scb-framework'), self::$loaded, self::$candidates);
 	}
 }
 endif;
 
-new scbLoad(__FILE__, 55);
+scbLoad3::init(14, __FILE__, array(
+	'scbUtil', 'scbOptions', 'scbForms', 'scbTable', 'scbDebug',
+	'scbWidget', 'scbAdminPage', 'scbBoxesPage',
+	'scbQuery', 'scbRewrite', 'scbCron',
+));
 

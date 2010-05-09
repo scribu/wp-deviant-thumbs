@@ -1,6 +1,7 @@
 <?php
 
 class deviantThumbsWidget extends scbWidget {
+
 	function deviantThumbsWidget() {
 		$this->defaults = array(
 			'query' => 'by:',
@@ -8,6 +9,7 @@ class deviantThumbsWidget extends scbWidget {
 			'count' => 3,
 			'carousel' => 1,
 			'rand' => false,
+			'cache' => 6
 		);
 
 		$widget_ops = array(
@@ -21,14 +23,13 @@ class deviantThumbsWidget extends scbWidget {
 		extract($instance);
 
 		$remove_scraps = '-in:scraps';
-
 		if ( !$scraps && FALSE === strpos($query, $remove_scraps) )
 			$query .= " $remove_scraps";
 
 		// Generate content
-		if ( $carousel && class_exists('deviantThumbsCarousel') ) {
+		if ( $carousel && class_exists('deviantThumbsCarousel') )
 			echo deviantThumbsCarousel::carousel($query, compact('count', 'rand', 'cache'));
-		} else {
+		else {
 			echo '<ul id="deviant-thumbs">';
 			echo deviantThumbs::get($query, compact('count', 'rand', 'cache'));
 			echo '</ul>';
@@ -87,6 +88,12 @@ class deviantThumbsWidget extends scbWidget {
 				'title' => 'Show as a carousel',
 				'name' => 'carousel',
 				'type' => 'checkbox',
+			),
+			array(
+				'title' => 'Update cache every %input% hours.',
+				'name' => 'cache',
+				'type' => 'text',
+				'extra' => 'class="widefat" style="width: 24px; text-align:right"'
 			)
 		);
 

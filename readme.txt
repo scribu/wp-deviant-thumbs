@@ -1,9 +1,9 @@
 === Deviant Thumbs ===
 Contributors: scribu
-Donate link: http://scribu.net/paypal
+Donate link: http://scribu.net/wordpress
 Tags: deviantart, thumbs, images
 Requires at least: 2.8
-Tested up to: 2.9-rare
+Tested up to: 3.0
 Stable tag: 1.8.6
 
 Display deviantART thumbnails on your blog.
@@ -16,7 +16,7 @@ Display linked thumbnails from deviantART on your WordPress blog.
 
 * **Scrollable carousel**: your thumbs can be displayed in a dA style carousel
 * **Inline deviations**: the code *:thumb98765:* inside a post becomes a thumbnail, just like on dA
-* **Multiple widget support**
+* **Multiple widget support** 
 * **Flexible template tags**
 
 == Installation ==
@@ -77,7 +77,7 @@ These are meant to be used outside The Loop.
 
 = "Parse error: syntax error, unexpected T_CLASS..." Help! =
 
-Make sure your host is running PHP 5. Add this line to wp-config.php to make sure:
+Make sure your new host is running PHP 5. Add this line to wp-config.php:
 
 `var_dump(PHP_VERSION);`
 
@@ -92,27 +92,17 @@ You enter a search string (the thumbs are found using the search engine from dev
 
 = How can I modifify the carousel skin? =
 
-Copy the CSS from `deviant-thumbs/inc/carousel/carousel.css` into your theme's style.css and modify it there.
+You can edit `deviant-thumbs/inc/carousel/carousel.css`.
 
-This should override the default skin appearance.
+= Why isn't the cache working? =
 
+Probably because your wp-uploads folder isn't writable. You will have to chmod it to 757. If you don't know how, read [Changing File Permissions](http://codex.wordpress.org/Changing_File_Permissions).
 
 == Screenshots ==
 
 1. The Deviant Thumbs Carousel
 
 == Changelog ==
-
-= 1.9.2 =
-* prevent potential memory leak
-
-= 1.9.1 =
-* ignore items that don't have thumbnails
-
-= 1.9 =
-* don't use Yahoo Pipes anymore
-* remove file cache
-* [more info](http://scribu.net/wordpress/deviant-thumbs/dt-1-9.html)
 
 = 1.8.6 =
 * fix error when retrieving thumb list

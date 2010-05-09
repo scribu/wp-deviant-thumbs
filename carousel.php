@@ -1,6 +1,6 @@
 <?php
 
-abstract class deviantThumbsCarousel {
+class deviantThumbsCarousel {
 	static $carousels = array();
 
 	function carousel($query, $args = '') {
@@ -9,6 +9,8 @@ abstract class deviantThumbsCarousel {
 			'show' => 3,
 			'rand'  => true,
 			'speed' => 'fast',
+			'cache' => 6,
+
 			'id' => sanitize_title_with_dashes($query),
 			'before' => "\t\t<li>",
 			'after' => "</li>"
