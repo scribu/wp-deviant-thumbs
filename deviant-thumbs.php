@@ -24,11 +24,11 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
+// Load scbFramework
+require_once dirname(__FILE__) . '/scb/load.php';
+
 // Init
 function _deviant_thumbs_init() {
-	// Load scbFramework
-	require_once dirname(__FILE__) . '/scb/load.php';
-
 	foreach ( array('carousel', 'widget', 'inline') as $file )
 		require_once dirname(__FILE__) . "/$file.php";
 
@@ -37,7 +37,7 @@ function _deviant_thumbs_init() {
 
 	scbWidget::init('deviantThumbsWidget', __FILE__, 'deviant-thumbs');
 }
-_deviant_thumbs_init();
+scb_init('_deviant_thumbs_init');
 
 class deviantThumbs {
 	static $cache_dir;
