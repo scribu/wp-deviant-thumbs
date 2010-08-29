@@ -19,7 +19,10 @@ Display linked thumbnails from deviantART on your WordPress blog.
 * **Multiple widget support** 
 * **Flexible template tags**
 
+Links: [Plugin News](http://scribu.net/wordpress/deviant-thumbs) | [Author's Site](http://scribu.net)
+
 == Installation ==
+
 Either use the plugin installer built into WP, or:
 
 1. Unzip and upload the `deviant-thumbs` directory to the `/wp-content/plugins/` directory.
