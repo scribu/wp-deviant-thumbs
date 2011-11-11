@@ -8,7 +8,7 @@ Author URI: http://scribu.net/
 Plugin URI: http://scribu.net/wordpress/deviant-thumbs
 Textdomain: deviant-thumbs
 
-Copyright (C) 2009 Cristi Burcă (scribu@gmail.com)
+Copyright (C) 2009 Cristi Burcă (mail@scribu.net)
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
