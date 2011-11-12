@@ -1,6 +1,5 @@
 === Deviant Thumbs ===
 Contributors: scribu
-Donate link: http://scribu.net/wordpress
 Tags: deviantart, thumbs, images
 Requires at least: 2.8
 Tested up to: 3.0
