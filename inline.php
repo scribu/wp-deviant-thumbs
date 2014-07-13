@@ -2,7 +2,7 @@
 
 class deviantThumbsInline {
 
-	function init() {
+	static function init() {
 		add_filter('the_content', array(__CLASS__, 'inline'));
 	}
 
