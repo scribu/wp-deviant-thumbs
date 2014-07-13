@@ -1,5 +1,5 @@
 === Deviant Thumbs ===
-Contributors: scribu
+Contributors: scribu, jesin
 Tags: deviantart, thumbs, images
 Requires at least: 2.8
 Tested up to: 3.0
