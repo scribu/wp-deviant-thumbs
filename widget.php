@@ -27,9 +27,10 @@ class deviantThumbsWidget extends scbWidget {
 			$query .= " $remove_scraps";
 
 		// Generate content
-		if ( $carousel && class_exists('deviantThumbsCarousel') )
-			echo deviantThumbsCarousel::carousel($query, compact('count', 'rand', 'cache'));
-		else {
+		if ( $carousel && class_exists('deviantThumbsCarousel') ) {
+			$deviantThumbsCarousel = new deviantThumbsCarousel;
+			echo $deviantThumbsCarousel->carousel($query, compact('count', 'rand', 'cache'));
+		} else {
 			echo '<ul id="deviant-thumbs">';
 			echo deviantThumbs::get($query, compact('count', 'rand', 'cache'));
 			echo '</ul>';
@@ -58,39 +59,39 @@ class deviantThumbsWidget extends scbWidget {
 
 		$rows = array(
 			array(
-				'title' => 'Title:',
+				'desc' => 'Title:',
 				'name' => 'title',
 				'type' => 'text',
 			),
 			array(
-				'title' => 'Selection (See the <a href="http://help.deviantart.com/577/" target="_blank">FAQ</a> on dA):',
+				'desc' => 'Selection (See the <a href="http://help.deviantart.com/577/" target="_blank">FAQ</a> on dA):',
 				'name' => 'query',
 				'type' => 'text',
-				'desc' => 'Example: <em>by:username in:photography</em>'
+				'wrap' => '%input%<small>Example: <em>by:username in:photography</em></small>'
 			),
 			array(
-				'title' => 'Display %input% thumbs.',
+				'wrap' => 'Display %input% thumbs.',
 				'name' => 'count',
 				'type' => 'text',
 				'extra' => 'class="widefat" style="width: 24px; text-align:right"'
 			),
 			array(
-				'title' => 'Show scraps',
+				'desc' => 'Show scraps',
 				'name' => 'scraps',
 				'type' => 'checkbox'
 			),
 			array(
-				'title' => 'Show random thumbs',
+				'desc' => 'Show random thumbs',
 				'name' => 'rand',
 				'type' => 'checkbox',
 			),
 			array(
-				'title' => 'Show as a carousel',
+				'desc' => 'Show as a carousel',
 				'name' => 'carousel',
 				'type' => 'checkbox',
 			),
 			array(
-				'title' => 'Update cache every %input% hours.',
+				'wrap' => 'Update cache every %input% hours.',
 				'name' => 'cache',
 				'type' => 'text',
 				'extra' => 'class="widefat" style="width: 24px; text-align:right"'
@@ -98,7 +99,7 @@ class deviantThumbsWidget extends scbWidget {
 		);
 
 		foreach ( $rows as $row )
-			echo $this->input($row, $instance);
+			echo html( 'p', $this->input($row, $instance) );
 	}
 }
 
