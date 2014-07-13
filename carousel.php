@@ -22,7 +22,7 @@ class deviantThumbsCarousel {
 
 		$output = "<div id='" . $args['id'] . "'><ul>\n{$thumbs}</ul></div>\n";
 
-		add_action('wp_footer', array(__CLASS__, 'add_scripts'));
+		add_action('wp_footer', array($this, 'add_scripts'));
 
 		return $output;
 	}
