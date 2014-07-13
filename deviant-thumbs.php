@@ -42,7 +42,7 @@ scb_init('_deviant_thumbs_init');
 class deviantThumbs {
 	static $cache_dir;
 
-	function init() {
+	static function init() {
 		$wud = wp_upload_dir();
 		self::$cache_dir = $wud['basedir'] . DIRECTORY_SEPARATOR . 'deviant-thumbs';
 
@@ -130,4 +130,3 @@ class deviantThumbs {
 function deviant_thumbs($query, $args = '') {
 	echo deviantThumbs::get($query, $args);
 }
-
