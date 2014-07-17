@@ -116,6 +116,7 @@ class deviantThumbs {
 
 		// Extract thumb list
 		$thumbs_nr = count($data['value']['items']);
+		$thumbs = Array();
 		for ( $i=0; $i<$thumbs_nr; $i++ )
 			$thumbs[] = str_replace(' rel="nofollow" target="_blank"', '', $data['value']['items'][$i]['content']);
 
